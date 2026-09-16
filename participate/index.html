@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Participate | ExonoPeeps</title>
+<meta name="description" content="Tell the room what you can offer. Add yourself to the ExonoPeeps Exchange in under a minute.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Tell the room what you can offer.">
+<meta property="og:description" content="Add yourself to the ExonoPeeps Exchange.">
+<meta property="og:site_name" content="ExonoPeeps">
+<meta name="theme-color" content="#FDF8F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@600;700&display=swap">
+<style>
+/* Tokens lifted from the root index.html bundle so this page stays in the same system. */
+:root{
+  --exo:#6CA84E;--exo-ink:#4A7A33;--exo-soft:#E4F0DA;
+  --ap:#0C889D;--ap-ink:#086F82;--ap-soft:#D5EAEE;
+  --xp:#31B28B;
+  --cream:#FDF8F2;--graphite:#141C24;
+  --display:'Source Sans 3',system-ui,sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --gut:clamp(20px,5vw,88px);
+  --line:#E7DED2;
+  --muted:#5C6773;
+  --err:#B91C1C;--err-soft:#FEE2E2;
+  --ok:#15803D;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--graphite);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.h-lg,.h-md,.h-sm{margin:0;font-family:var(--display);font-weight:700;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
+p{margin:0}
+a{color:var(--ap);text-decoration:none}
+a:hover{color:var(--ap-ink)}
+:focus-visible{outline:2px solid var(--ap);outline-offset:3px;border-radius:4px}
+img{max-width:100%}
+/* A display rule on a class silently beats the hidden attribute's UA default. */
+[hidden]{display:none!important}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 var(--gut)}
+.eye{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.h-lg{font-size:clamp(34px,5vw,60px)}
+.h-md{font-size:clamp(24px,3.1vw,34px);line-height:1.08}
+.h-sm{font-size:clamp(19px,1.7vw,22px);letter-spacing:-.012em;line-height:1.15}
+.lede{font-size:clamp(16px,1.3vw,19px);line-height:1.6;color:var(--muted)}
+.dim{color:var(--muted)}
+
+/* ── nav ───────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:60;background:rgba(253,248,242,.88);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .25s}
+nav.on{border-bottom-color:var(--line)}
+.navin{display:flex;align-items:center;gap:26px;padding:15px var(--gut);max-width:720px;margin:0 auto}
+.mark{display:flex;align-items:center;gap:9px}
+.mark img{height:24px;width:auto;display:block}
+
+/* ── buttons ───────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;font-family:var(--sans);font-weight:700;font-size:15px;line-height:20px;padding:13px 24px;border-radius:999px;border:1px solid var(--graphite);background:var(--graphite);color:#fff;cursor:pointer;transition:transform .16s,background .16s,color .16s,border-color .16s}
+.btn:hover:not(:disabled){background:var(--ap);border-color:var(--ap);color:#fff;transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--graphite)}
+.btn.ghost:hover:not(:disabled){background:var(--graphite);border-color:var(--graphite);color:#fff}
+.btn.sm{padding:10px 19px;font-size:14px}
+.btn.full{width:100%;padding:16px 24px;font-size:16px}
+
+/* ── header ────────────────────────────────────────── */
+header{padding:clamp(28px,6vw,56px) 0 clamp(20px,4vw,32px)}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.brandline img.exo{height:26px;width:auto}
+.brandline img.apl{height:19px;width:auto}
+.brandline .x{color:var(--xp);font-size:15px}
+header h1{margin-bottom:14px}
+.evtag{display:inline-flex;align-items:center;gap:8px;margin-top:20px;padding:7px 15px;border-radius:999px;background:var(--ap-soft);color:var(--ap-ink);font-size:13px;font-weight:600}
+.evtag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ap)}
+
+/* ── form ──────────────────────────────────────────── */
+form{padding-bottom:64px}
+fieldset{border:0;padding:0;margin:0 0 36px}
+legend{padding:0;margin-bottom:6px}
+.seclede{margin-bottom:22px}
+.field{margin-bottom:20px}
+label{display:block;font-size:14px;font-weight:600;margin-bottom:7px}
+.req{color:var(--ap);margin-left:3px}
+.hint{font-size:13px;color:var(--muted);font-weight:400;margin-top:6px}
+input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{
+  width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--graphite);
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+  transition:border-color .16s,box-shadow .16s;-webkit-appearance:none;appearance:none}
+textarea{resize:vertical;min-height:120px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23141C24' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;padding-right:40px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ap);box-shadow:0 0 0 3px rgba(12,136,157,.14)}
+input[aria-invalid=true],textarea[aria-invalid=true],select[aria-invalid=true]{border-color:var(--err);background:#FFFCFC}
+.fielderr{display:none;font-size:13px;color:var(--err);margin-top:6px;font-weight:500}
+.fielderr.on{display:block}
+.count{float:right;font-size:12px;color:var(--muted);font-weight:400}
+.count.warn{color:var(--err)}
+
+/* honeypot — off-screen, never shown, catches naive bots */
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ── photo ─────────────────────────────────────────── */
+.photo{border:1.5px dashed var(--line);border-radius:14px;background:#fff;padding:22px;text-align:center}
+.photo.has{padding:12px;border-style:solid}
+.photobtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.prev{position:relative;display:block}
+.prev img{width:100%;max-height:300px;object-fit:contain;border-radius:10px;display:block}
+.prevbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:0 4px}
+.prevmeta{font-size:13px;color:var(--muted);text-align:left;min-width:0}
+.prevmeta b{display:block;color:var(--graphite);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lnk{background:none;border:0;padding:0;font:inherit;font-size:13px;font-weight:600;color:var(--ap);cursor:pointer;text-decoration:underline}
+.lnk:hover{color:var(--ap-ink)}
+
+/* ── submit / status ───────────────────────────────── */
+.actions{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(253,248,242,0) 0%,var(--cream) 34%);padding:20px 0 max(20px,env(safe-area-inset-bottom))}
+.formerr{display:none;background:var(--err-soft);border:1px solid #F5C2C2;color:var(--err);border-radius:12px;padding:13px 16px;font-size:14px;margin-bottom:16px;font-weight:500}
+.formerr.on{display:block}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── done ──────────────────────────────────────────── */
+.done{display:none;padding:clamp(40px,10vw,80px) 0;text-align:center}
+.done.on{display:block}
+.tick{width:66px;height:66px;border-radius:50%;background:var(--xp);display:flex;align-items:center;justify-content:center;margin:0 auto 26px}
+.tick svg{width:31px;height:31px}
+.done h2{margin-bottom:14px}
+.ref{display:inline-block;margin-top:26px;padding:11px 20px;border-radius:12px;background:#fff;border:1px solid var(--line);font-size:14px;color:var(--muted)}
+.ref b{color:var(--graphite);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:600}
+.doneacts{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+
+/* ── footer ────────────────────────────────────────── */
+footer{background:var(--graphite);color:#F2EFEA;padding:44px 0}
+footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+footer img{height:20px;width:auto;filter:brightness(1.35)}
+.fbot{font-size:13px;color:#9AA5AF}
+
+@media(max-width:600px){
+  body{font-size:16px}
+  .navin{gap:14px}
+  .photobtns .btn{flex:1;min-width:130px}
+  footer .wrap{flex-direction:column;align-items:flex-start}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="navin">
+    <a class="mark" href="/" aria-label="ExonoPeeps home"><img src="../assets/exonopeeps.png" alt="ExonoPeeps"></a>
+  </div>
+</nav>
+
+<main class="wrap" id="top">
+
+  <header>
+    <div class="brandline">
+      <img class="exo" src="../assets/exonome.png" alt="Exonome">
+      <span class="x">&times;</span>
+      <img class="apl" src="../assets/allpeep.svg" alt="AllPeeP">
+    </div>
+    <p class="eye">Participate</p>
+    <h1 class="h-lg">Tell the room what you can offer.</h1>
+    <p class="lede" style="margin-top:14px">Add yourself to the Exchange so the people you meet today can find you afterwards &mdash; and so you show up when someone needs exactly what you do.</p>
+    <p class="evtag">The Exchange &middot; SF Tech Week</p>
+  </header>
+
+  <form id="f" novalidate>
+
+    <div class="formerr" id="formerr" role="alert" aria-live="assertive"></div>
+
+    <fieldset>
+      <legend class="h-sm">You</legend>
+      <p class="lede seclede">How people reach you after today.</p>
+
+      <div class="field">
+        <label for="name">Name<span class="req">*</span></label>
+        <input id="name" name="name" type="text" maxlength="50" autocomplete="name" required
+               enterkeyhint="next" placeholder="Jane Rivera">
+        <p class="fielderr" id="name-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="email">Email<span class="req">*</span></label>
+        <input id="email" name="email" type="email" maxlength="50" autocomplete="email" required
+               inputmode="email" enterkeyhint="next" placeholder="jane@example.com">
+        <p class="fielderr" id="email-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel" maxlength="16" autocomplete="tel"
+               inputmode="tel" enterkeyhint="next" placeholder="415 555 0134">
+        <p class="hint">Optional. Only used if someone wants to reach you directly.</p>
+        <p class="fielderr" id="phone-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="company">Company or organization</label>
+        <input id="company" name="company" type="text" maxlength="100" autocomplete="organization"
+               enterkeyhint="next" placeholder="Rivera Design Co.">
+        <p class="hint">Optional. Leave blank if you're here as yourself.</p>
+        <p class="fielderr" id="company-e"></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="h-sm">What you offer</legend>
+      <p class="lede seclede">The thing you'd want someone here to know you for.</p>
+
+      <div class="field">
+        <label for="offering">Headline<span class="req">*</span>
+          <span class="count" id="offering-c">0/50</span></label>
+        <input id="offering" name="offering" type="text" maxlength="50" required
+               enterkeyhint="next" placeholder="Fractional CFO for seed-stage startups">
+        <p class="fielderr" id="offering-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="category">Category<span class="req">*</span></label>
+        <select id="category" name="category" required>
+          <option value="">Choose one&hellip;</option>
+          <option>Advisory &amp; Consulting</option>
+          <option>Design &amp; Creative</option>
+          <option>Engineering &amp; Technical</option>
+          <option>Finance &amp; Accounting</option>
+          <option>Legal</option>
+          <option>Marketing &amp; Growth</option>
+          <option>Operations &amp; People</option>
+          <option>Sales &amp; Partnerships</option>
+          <option>Product &amp; Strategy</option>
+          <option>Data &amp; AI</option>
+          <option>Capital &amp; Investment</option>
+          <option>Introductions &amp; Network</option>
+          <option>Space, Goods &amp; Equipment</option>
+          <option>Other</option>
+        </select>
+        <p class="fielderr" id="category-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="description">Tell us more<span class="req">*</span>
+          <span class="count" id="description-c">0/600</span></label>
+        <textarea id="description" name="description" maxlength="600" required
+                  placeholder="What you do, who it's for, and what a good introduction to you looks like."></textarea>
+        <p class="fielderr" id="description-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="specialty">Specialty</label>
+        <input id="specialty" name="specialty" type="text" maxlength="30"
+               enterkeyhint="next" placeholder="SaaS metrics">
+        <p class="hint">Optional. One short phrase.</p>
+        <p class="fielderr" id="specialty-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="tags">Tags</label>
+        <input id="tags" name="tags" type="text" maxlength="120"
+               enterkeyhint="next" placeholder="fintech, b2b, early-stage">
+        <p class="hint">Optional. Comma separated &mdash; helps people find you.</p>
+        <p class="fielderr" id="tags-e"></p>
+      </div>
+
+      <div class="field">
+        <label for="link">Link</label>
+        <input id="link" name="link" type="url" maxlength="300" inputmode="url"
+               enterkeyhint="done" placeholder="https://your-site.com">
+        <p class="hint">Optional. Site, LinkedIn, portfolio &mdash; whatever is most useful.</p>
+        <p class="fielderr" id="link-e"></p>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="h-sm">Photo</legend>
+      <p class="lede seclede">Optional. A headshot, your logo, or a shot of your work.</p>
+
+      <div class="photo" id="photobox">
+        <div id="photoempty">
+          <p class="dim" style="font-size:14px;margin-bottom:16px">Use your camera or pick a file.</p>
+          <div class="photobtns">
+            <button type="button" class="btn ghost sm" id="btncam">Take a photo</button>
+            <button type="button" class="btn ghost sm" id="btnfile">Choose file</button>
+          </div>
+        </div>
+        <div class="prev" id="photoprev" hidden>
+          <img id="previmg" alt="Selected photo preview">
+          <div class="prevbar">
+            <div class="prevmeta"><b id="prevname"></b><span id="prevsize"></span></div>
+            <button type="button" class="lnk" id="btnclear">Remove</button>
+          </div>
+        </div>
+      </div>
+      <p class="fielderr" id="photo-e"></p>
+
+      <!-- capture= asks mobile for the camera directly; the second input has no
+           capture attribute so the same device can still reach its photo library. -->
+      <input class="hp" id="cam" type="file" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
+      <input class="hp" id="file" type="file" accept="image/*" tabindex="-1" aria-hidden="true">
+    </fieldset>
+
+    <!-- Bot trap. Real people never see or fill this. -->
+    <div class="hp" aria-hidden="true">
+      <label for="website">Website</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+
+    <div class="actions">
+      <button class="btn full" type="submit" id="submit">
+        <span id="submitlabel">Add me to the Exchange</span>
+      </button>
+      <p class="hint" style="text-align:center;margin-top:12px">
+        Your details go to the ExonoPeeps Exchange. We don't sell or share them.
+      </p>
+    </div>
+  </form>
+
+  <section class="done" id="done" aria-live="polite">
+    <div class="tick">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4.5 12.5L9.5 17.5L19.5 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 class="h-md">You're on the Exchange.</h2>
+    <p class="lede" style="margin-top:12px">Check your email &mdash; that's where anything that comes of this will land.</p>
+    <p class="ref">Reference <b id="refid"></b></p>
+    <div class="doneacts">
+      <a class="btn" href="https://exonopeeps.ap.social" target="_blank" rel="noopener">Explore ExonoPeeps</a>
+      <button class="btn ghost" type="button" id="again">Add another</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div style="display:flex;align-items:center;gap:13px">
+      <img src="../assets/exonome.png" alt="Exonome">
+      <span style="color:var(--xp);font-size:15px">&times;</span>
+      <img src="../assets/allpeep-light.svg" alt="AllPeeP" style="height:16px">
+    </div>
+    <span class="fbot">The Exchange &middot; SF Tech Week &middot; October 8, 2026</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // The Worker holds SPID, MOID and the partner API key. This page never sees them.
+  var ENDPOINT = '/api/participate';
+
+  var MAX_EDGE  = 1600;              // longest side we send, in px
+  var JPEG_Q    = 0.82;
+  var MAX_BYTES = 8 * 1024 * 1024;   // reject originals above this before decoding
+
+  var $ = function(id){ return document.getElementById(id); };
+
+  var form = $('f'), formerr = $('formerr'), submit = $('submit'), submitlabel = $('submitlabel');
+  var photoFile = null;
+
+  /* nav hairline on scroll — same behaviour as the root page */
+  var nav = $('nav');
+  addEventListener('scroll', function(){ nav.classList.toggle('on', scrollY > 12); }, {passive:true});
+
+  /* ── live character counts ─────────────────────────── */
+  ['offering','description'].forEach(function(id){
+    var el = $(id), out = $(id + '-c'), max = el.getAttribute('maxlength');
+    var tick = function(){
+      out.textContent = el.value.length + '/' + max;
+      out.classList.toggle('warn', el.value.length >= max * 0.9);
+    };
+    el.addEventListener('input', tick); tick();
+  });
+
+  /* ── validation ────────────────────────────────────── */
+  // Lengths mirror the partner API's own MaxLength attributes, so a value that
+  // passes here cannot be rejected by the API for being too long.
+  var RULES = {
+    name:        {max:50,  required:true, label:'name'},
+    email:       {max:50,  required:true, label:'email', email:true},
+    phone:       {max:16,  label:'phone'},
+    company:     {max:100, label:'company'},
+    offering:    {max:50,  required:true, label:'headline'},
+    category:    {max:60,  required:true, label:'category'},
+    description: {max:600, required:true, label:'description'},
+    specialty:   {max:30,  label:'specialty'},
+    tags:        {max:120, label:'tags'},
+    link:        {max:300, label:'link', url:true}
+  };
+
+  function setErr(id, msg){
+    var el = $(id), box = $(id + '-e');
+    if (msg){ el.setAttribute('aria-invalid','true'); box.textContent = msg; box.classList.add('on'); }
+    else    { el.removeAttribute('aria-invalid'); box.textContent = ''; box.classList.remove('on'); }
+    return !msg;
+  }
+
+  function checkField(id){
+    var r = RULES[id], v = $(id).value.trim();
+    if (r.required && !v)      return setErr(id, 'Please add your ' + r.label + '.');
+    if (v.length > r.max)      return setErr(id, 'Keep this under ' + r.max + ' characters.');
+    // Deliberately loose: one @, something either side, a dot in the domain.
+    if (r.email && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v))
+      return setErr(id, "That doesn't look like an email address.");
+    if (r.url && v && !/^https?:\/\/.+\..+/i.test(v))
+      return setErr(id, 'Include the full address, starting with https://');
+    return setErr(id, '');
+  }
+
+  Object.keys(RULES).forEach(function(id){
+    var el = $(id);
+    // Validate on the way out, then live once the field is already marked bad —
+    // so we never nag mid-typing but do clear the error as soon as it's fixed.
+    el.addEventListener('blur', function(){ checkField(id); });
+    el.addEventListener('input', function(){ if (el.getAttribute('aria-invalid')) checkField(id); });
+    el.addEventListener('change', function(){ if (el.getAttribute('aria-invalid')) checkField(id); });
+  });
+
+  /* ── photo capture ─────────────────────────────────── */
+  var camInput = $('cam'), fileInput = $('file');
+  var box = $('photobox'), empty = $('photoempty'), prev = $('photoprev');
+
+  $('btncam').addEventListener('click',  function(){ camInput.click(); });
+  $('btnfile').addEventListener('click', function(){ fileInput.click(); });
+  camInput.addEventListener('change',  function(){ pick(camInput.files[0]); });
+  fileInput.addEventListener('change', function(){ pick(fileInput.files[0]); });
+
+  function human(b){
+    return b < 1024 ? b + ' B'
+         : b < 1048576 ? (b/1024).toFixed(0) + ' KB'
+         : (b/1048576).toFixed(1) + ' MB';
+  }
+
+  function pick(file){
+    if (!file) return;
+    setErr2('');
+    if (!/^image\//.test(file.type)) return setErr2('That file is not an image.');
+    if (file.size > MAX_BYTES)       return setErr2('That image is too large. Try one under ' + human(MAX_BYTES) + '.');
+
+    // Downscale in-browser: a modern phone photo is 3-6MB, which is slow to send on
+    // event wifi and far larger than the listing needs.
+    shrink(file).then(function(out){
+      photoFile = out;
+      $('previmg').src   = URL.createObjectURL(out);
+      $('prevname').textContent = file.name || 'photo.jpg';
+      $('prevsize').textContent = human(out.size)
+        + (out.size < file.size ? ' · resized from ' + human(file.size) : '');
+      empty.hidden = true; prev.hidden = false; box.classList.add('has');
+    }).catch(function(){
+      setErr2("We couldn't read that image. Try another one.");
+    });
+  }
+
+  function setErr2(msg){
+    var box2 = $('photo-e');
+    box2.textContent = msg || '';
+    box2.classList.toggle('on', !!msg);
+  }
+
+  function shrink(file){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function(){
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || !h) return reject();
+        // Already small enough and not a format we need to normalise — send as-is.
+        if (w <= MAX_EDGE && h <= MAX_EDGE && /jpeg|png/.test(file.type)) return resolve(file);
+
+        var s = Math.min(1, MAX_EDGE / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width  = Math.round(w * s);
+        c.height = Math.round(h * s);
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function(blob){
+          if (!blob) return reject();
+          // Keep the shrunk copy only if it actually saved anything.
+          resolve(blob.size < file.size ? blob : file);
+        }, 'image/jpeg', JPEG_Q);
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(); };
+      img.src = url;
+    });
+  }
+
+  $('btnclear').addEventListener('click', clearPhoto);
+  function clearPhoto(){
+    photoFile = null;
+    camInput.value = ''; fileInput.value = '';
+    var s = $('previmg').src;
+    if (s.indexOf('blob:') === 0) URL.revokeObjectURL(s);
+    $('previmg').removeAttribute('src');
+    empty.hidden = false; prev.hidden = true; box.classList.remove('has');
+    setErr2('');
+  }
+
+  /* ── submit ────────────────────────────────────────── */
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    formerr.classList.remove('on');
+
+    var bad = Object.keys(RULES).filter(function(id){ return !checkField(id); });
+    if (bad.length){
+      var first = $(bad[0]);
+      first.focus();
+      first.scrollIntoView({block:'center', behavior:'smooth'});
+      formerr.textContent = bad.length === 1
+        ? 'One field needs a moment.'
+        : bad.length + ' fields need a moment.';
+      formerr.classList.add('on');
+      return;
+    }
+
+    // multipart, so the photo rides along with the fields in a single request.
+    var fd = new FormData();
+    Object.keys(RULES).forEach(function(id){ fd.append(id, $(id).value.trim()); });
+    fd.append('website', $('website').value);            // honeypot
+    if (photoFile) fd.append('photo', photoFile, 'photo.jpg');
+
+    busy(true);
+    fetch(ENDPOINT, {method:'POST', body:fd})
+      .then(function(r){
+        return r.json().catch(function(){ return {}; }).then(function(body){
+          return {ok:r.ok, status:r.status, body:body};
+        });
+      })
+      .then(function(res){
+        if (!res.ok || res.body.success === false){
+          throw new Error(res.body.error || 'That didn’t go through. Please try again.');
+        }
+        showDone(res.body.data);
+      })
+      .catch(function(err){
+        busy(false);
+        formerr.textContent = err.message || 'We couldn’t reach the Exchange. Check your connection and try again.';
+        formerr.classList.add('on');
+        formerr.scrollIntoView({block:'center', behavior:'smooth'});
+      });
+  });
+
+  function busy(on){
+    submit.disabled = on;
+    submitlabel.textContent = on ? 'Adding you…' : 'Add me to the Exchange';
+    var sp = submit.querySelector('.spin');
+    if (on && !sp){ sp = document.createElement('span'); sp.className = 'spin'; submit.insertBefore(sp, submitlabel); }
+    if (!on && sp) sp.remove();
+  }
+
+  function showDone(data){
+    $('refid').textContent = (data && data.ofid) ? ('OF-' + data.ofid) : '—';
+    form.style.display = 'none';
+    document.querySelector('header').style.display = 'none';
+    $('done').classList.add('on');
+    scrollTo({top:0, behavior:'smooth'});
+  }
+
+  $('again').addEventListener('click', function(){
+    form.reset();
+    clearPhoto();
+    Object.keys(RULES).forEach(function(id){ setErr(id, ''); });
+    ['offering','description'].forEach(function(id){
+      $(id).dispatchEvent(new Event('input'));
+    });
+    busy(false);
+    formerr.classList.remove('on');
+    $('done').classList.remove('on');
+    form.style.display = '';
+    document.querySelector('header').style.display = '';
+    scrollTo({top:0, behavior:'smooth'});
+    $('name').focus();
+  });
+
+})();
+</script>
+</body></html>

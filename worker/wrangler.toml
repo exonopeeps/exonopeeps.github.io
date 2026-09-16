@@ -1,0 +1,24 @@
+name = "exonopeeps-participate"
+main = "src/index.js"
+compatibility_date = "2026-09-16"
+
+# The site itself stays on GitHub Pages. This Worker claims only /api/*, so every other
+# path still falls through to Pages exactly as it does today.
+[[routes]]
+pattern = "www.exonopeeps.com/api/*"
+zone_name = "exonopeeps.com"
+
+[vars]
+EXONOME_API_BASE = "https://partners.exono.me"
+EVENT_NAME       = "The Exchange"
+# EntityMapping.Status: 0 = pending, 4 = Live. Leads publish straight to the market.
+LISTING_STATUS   = "4"
+
+# Secrets are NOT set here — anything in this file is committed to a public repo.
+# Set them once per environment:
+#
+#   wrangler secret put EXONOME_API_KEY   # partner key: offerings:write + entity-mappings:write
+#   wrangler secret put EXONOME_SPID      # seller the leads attach to
+#   wrangler secret put EXONOME_MOID      # market the leads land in
+#
+# Verify with:  wrangler secret list
