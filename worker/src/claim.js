@@ -42,6 +42,8 @@ const BAD_CODE     = "That code didn't work, or it has expired. Check it, or sen
 export async function claim(request, env, ctx, action) {
   const missing = ['EXONOME_API_KEY', 'SESSION_SECRET'].filter((k) => !env[k]);
   if (!env.DB) missing.push('DB (D1 binding)');
+  if (!claimMoid(env)) missing.push('CLAIM_MOID');
+  if (!claimSpid(env)) missing.push('CLAIM_SPID');   // the event = its exchange AND its seller
   if (missing.length) {
     console.error('claim: missing binding(s):', missing.join(', '));
     return json({ success: false, error: 'Claiming is not switched on yet.' }, 500);
@@ -381,9 +383,9 @@ export async function claimMappings(env, { fresh = false } = {}) {
   const res = await upstream(env, 'GET', `/api/entity-mappings/by-moid/${moid}`);
   if (!res.ok) throw new Error(`entity-mappings/by-moid/${moid} -> ${res.status}`);
 
-  const min = Number(env.CLAIM_OFID_MIN) || 0;
-  const max = Number(env.CLAIM_OFID_MAX) || Infinity;
-  const spid = Number(env.CLAIM_SPID) || 0;           // optional: only the event's house seller
+  // The event is its exchange (MOID) and its house seller (SPID) — nothing else. No OFID range:
+  // guests are added continually, and a range silently shuts new cards out.
+  const spid = claimSpid(env);
   const list = (res.body.data || [])
     .map((m) => ({
       emid: field(m, 'EMID'),
@@ -397,8 +399,7 @@ export async function claimMappings(env, { fresh = false } = {}) {
     // Live (4) or paused (6) cards can be claimed: a participant who declined — which pauses the
     // card — can come back and accept. Only live cards count toward "N of M" (see wall.js).
     // Held, pending and archived cards are out.
-    .filter((m) => m.ofid > 0 && (m.status === LIVE || m.status === PAUSED) && !m.archived
-                   && m.ofid >= min && m.ofid <= max && (!spid || m.spid === spid));
+    .filter((m) => m.ofid > 0 && m.spid === spid && (m.status === LIVE || m.status === PAUSED) && !m.archived);
 
   mappingCache = { at: Date.now(), moid, list };
   return list;
@@ -631,6 +632,10 @@ export { LIVE };
 
 export function tagVocab(env) {
   return str(env.TAG_VOCAB).split(',').map(normTag).filter(Boolean);
+}
+
+export function claimSpid(env) {
+  return Number(env.CLAIM_SPID || env.EXONOME_SPID);
 }
 
 export function claimMoid(env) {

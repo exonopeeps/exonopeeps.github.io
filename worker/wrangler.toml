@@ -41,9 +41,6 @@ LISTING_STATUS   = "4"
 # ── claim ──────────────────────────────────────────────────────────────────
 # The market whose cards can be claimed: The Exchange 2026. Falls back to EXONOME_MOID.
 CLAIM_MOID       = "2322"
-# Optional: limit claiming to the imported participant cards.
-CLAIM_OFID_MIN   = "6226"
-CLAIM_OFID_MAX   = "6277"
 # Optional: only cards owned by the event's house seller ("Exchange 2026").
 CLAIM_SPID       = "3356"
 SITE_ORIGIN      = "https://exonopeeps.com"

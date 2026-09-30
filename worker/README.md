@@ -84,7 +84,7 @@ What `.dev.vars` needs:
   **Production** key edits real participants' cards and belongs only in `wrangler secret put`.
   Existing keys can't gain scopes, so both keys are new.
 - `SESSION_SECRET` — any long random string.
-- `CLAIM_MOID` / `CLAIM_OFID_MIN` / `CLAIM_OFID_MAX` if the test cards are not The Exchange
+- `CLAIM_MOID` / `CLAIM_SPID` if the test cards are not The Exchange
   2026. At least one card needs `EmailInvited` set to an address you can use.
 
 ## Deploy
