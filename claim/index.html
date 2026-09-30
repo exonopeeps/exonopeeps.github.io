@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Claim your card | ExonoPeeps</title>
+<meta name="description" content="You're already on the Exchange. Enter your email and make your card yours.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Claim your card on the Exchange">
+<meta property="og:description" content="You're already on the Exchange. Make your card yours.">
+<meta property="og:site_name" content="ExonoPeeps">
+<meta name="theme-color" content="#FDF8F2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@600;700&display=swap">
+<style>
+/* Tokens lifted from the root index.html bundle so this page stays in the same system. */
+:root{
+  --exo:#6CA84E;--exo-ink:#4A7A33;--exo-soft:#E4F0DA;
+  --ap:#0C889D;--ap-ink:#086F82;--ap-soft:#D5EAEE;
+  --xp:#31B28B;
+  --cream:#FDF8F2;--graphite:#141C24;
+  --display:'Source Sans 3',system-ui,sans-serif;
+  --sans:'Inter',system-ui,sans-serif;
+  --gut:clamp(20px,5vw,88px);
+  --line:#E7DED2;
+  --muted:#5C6773;
+  --err:#B91C1C;--err-soft:#FEE2E2;
+  --ok:#15803D;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--cream);color:var(--graphite);font-family:var(--sans);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.h-lg,.h-md,.h-sm{margin:0;font-family:var(--display);font-weight:700;letter-spacing:-.022em;line-height:1.02;text-wrap:balance}
+p{margin:0}
+a{color:var(--ap);text-decoration:none}
+a:hover{color:var(--ap-ink)}
+:focus-visible{outline:2px solid var(--ap);outline-offset:3px;border-radius:4px}
+img{max-width:100%}
+/* A display rule on a class silently beats the hidden attribute's UA default. */
+[hidden]{display:none!important}
+
+.wrap{max-width:560px;margin:0 auto;padding:0 var(--gut)}
+.eye{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.h-lg{font-size:clamp(34px,6vw,54px)}
+.h-md{font-size:clamp(24px,3.4vw,32px);line-height:1.08}
+.h-sm{font-size:clamp(19px,1.7vw,22px);letter-spacing:-.012em;line-height:1.15}
+.lede{font-size:clamp(16px,1.3vw,18px);line-height:1.6;color:var(--muted)}
+.dim{color:var(--muted)}
+
+/* ── nav ───────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:60;background:rgba(253,248,242,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.navin{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px var(--gut);max-width:560px;margin:0 auto}
+.mark{display:flex;align-items:center}
+.mark img{height:22px;width:auto;display:block}
+.live{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--graphite);white-space:nowrap}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:#B7AFA3}
+.live.on::before{background:var(--xp);box-shadow:0 0 0 0 rgba(49,178,139,.5);animation:pulse 2s infinite}
+.live.off::before{background:#C2410C}
+@keyframes pulse{70%{box-shadow:0 0 0 7px rgba(49,178,139,0)}100%{box-shadow:0 0 0 0 rgba(49,178,139,0)}}
+
+/* ── buttons ───────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;font-family:var(--sans);font-weight:700;font-size:15px;line-height:20px;padding:13px 24px;border-radius:999px;border:1px solid var(--graphite);background:var(--graphite);color:#fff;cursor:pointer;transition:transform .16s,background .16s,color .16s,border-color .16s;text-decoration:none}
+.btn:hover:not(:disabled){background:var(--ap);border-color:var(--ap);color:#fff;transform:translateY(-1px)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--graphite)}
+.btn.ghost:hover:not(:disabled){background:var(--graphite);border-color:var(--graphite);color:#fff}
+.btn.sm{padding:10px 18px;font-size:14px}
+.btn.full{width:100%;padding:16px 24px;font-size:16px}
+.lnk{background:none;border:0;padding:0;font:inherit;font-size:14px;font-weight:600;color:var(--ap);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lnk:hover{color:var(--ap-ink)}
+.lnk:disabled{color:var(--muted);cursor:default;text-decoration:none}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ── steps ─────────────────────────────────────────── */
+.step{padding:clamp(28px,7vw,52px) 0 64px;animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step h1{margin:12px 0 14px}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.brandline img.exo{height:24px;width:auto}
+.brandline img.apl{height:17px;width:auto}
+.brandline .x{color:var(--xp);font-size:15px}
+
+.field{margin-bottom:20px}
+label{display:block;font-size:14px;font-weight:600;margin-bottom:7px}
+.hint{font-size:13px;color:var(--muted);font-weight:400;margin-top:6px}
+input[type=text],input[type=email],input[type=url],textarea{
+  width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--graphite);
+  background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+  transition:border-color .16s,box-shadow .16s;-webkit-appearance:none;appearance:none}
+textarea{resize:vertical;min-height:132px}
+input:focus,textarea:focus{outline:none;border-color:var(--ap);box-shadow:0 0 0 3px rgba(12,136,157,.14)}
+input[aria-invalid=true],textarea[aria-invalid=true]{border-color:var(--err);background:#FFFCFC}
+.fielderr{display:none;font-size:13px;color:var(--err);margin-top:6px;font-weight:500}
+.fielderr.on{display:block}
+.count{float:right;font-size:12px;color:var(--muted);font-weight:400}
+.count.warn{color:var(--err)}
+.formerr{display:none;background:var(--err-soft);border:1px solid #F5C2C2;color:var(--err);border-radius:12px;padding:13px 16px;font-size:14px;margin-bottom:16px;font-weight:500}
+.formerr.on{display:block}
+.note{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:14px;color:var(--muted);margin-bottom:18px}
+.note b{color:var(--graphite)}
+.dev{background:#FFF7E0;border:1px dashed #E0B84A;color:#6B5310;border-radius:12px;padding:10px 14px;font-size:13px;margin-top:14px}
+.dev b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em}
+
+/* the code box: one field, big digits, the OS offers the code from Mail above the keyboard */
+#code{font-size:30px;font-weight:700;letter-spacing:.42em;text-align:center;padding:14px 10px 14px calc(10px + .42em);font-variant-numeric:tabular-nums}
+.again{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+
+/* ── the card preview — what the room will see ─────── */
+.card{position:relative;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 18px 40px -26px rgba(20,28,36,.45);margin:24px 0 34px}
+.card .ph{position:relative;aspect-ratio:16/10;background:linear-gradient(135deg,var(--ap-soft),var(--exo-soft));display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.card .ini{font-family:var(--display);font-weight:700;font-size:64px;color:var(--ap-ink);letter-spacing:-.02em}
+.card .cat{position:absolute;left:14px;top:14px;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.92);font-size:12px;font-weight:600;color:var(--graphite)}
+.card .bd{padding:18px 20px 20px}
+.card h3{font-size:22px;margin-bottom:4px}
+.card .ds{font-size:14.5px;line-height:1.55;color:#303A44;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:5;line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.card .tg{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.card .tg span{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--exo-soft);color:var(--exo-ink)}
+.card .tg:empty{display:none}
+.card .badge{position:absolute;right:14px;top:14px;padding:5px 11px;border-radius:999px;background:var(--graphite);color:#fff;font-size:12px;font-weight:700;opacity:0;transform:scale(.8);transition:opacity .3s,transform .3s}
+.card.saved .badge{opacity:1;transform:none}
+
+/* ── photo ─────────────────────────────────────────── */
+.photobtns{display:flex;gap:10px;flex-wrap:wrap}
+.photobtns .btn{flex:1;min-width:140px}
+.pstat{font-size:13px;margin-top:8px;color:var(--muted);min-height:20px}
+.pstat.ok{color:var(--ok);font-weight:600}
+.pstat.err{color:var(--err);font-weight:600}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* ── chips ─────────────────────────────────────────── */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;font-weight:600;padding:9px 15px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--graphite);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.chip[aria-pressed=true]{background:var(--graphite);border-color:var(--graphite);color:#fff}
+.chip[aria-pressed=true]::before{content:"✓ "}
+.chip:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── toggle ────────────────────────────────────────── */
+.consent{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .2s,background .2s}
+.consent:has(input:checked){border-color:var(--xp);background:#F3FBF7}
+.consent input{flex:none;width:24px;height:24px;margin:1px 0 0;accent-color:var(--xp);cursor:pointer}
+.consent b{display:block;font-size:15px;line-height:1.4}
+.consent small{display:block;font-size:13px;font-weight:400;line-height:1.5;color:var(--muted);margin-top:6px}
+.consent-off{font-size:13px;color:var(--muted);margin-top:10px}
+
+section.grp{margin-bottom:30px}
+section.grp > h2{margin-bottom:6px}
+section.grp > .lede{margin-bottom:18px;font-size:15px}
+
+.actions{position:sticky;bottom:0;background:linear-gradient(180deg,rgba(253,248,242,0) 0%,var(--cream) 34%);padding:20px 0 max(20px,env(safe-area-inset-bottom))}
+
+/* ── done ──────────────────────────────────────────── */
+.done{text-align:center}
+.tick{width:66px;height:66px;border-radius:50%;background:var(--xp);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;animation:pop .5s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+.tick svg{width:31px;height:31px}
+.doneacts{display:flex;flex-direction:column;gap:12px;margin-top:28px}
+.done .card{text-align:left}
+
+/* ── show-my-card overlay: a QR someone across the table can scan ─────── */
+.qr{position:fixed;inset:0;z-index:100;background:var(--graphite);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center}
+.qr .box{background:#fff;padding:18px;border-radius:22px;width:min(78vw,340px);aspect-ratio:1}
+.qr .box img,.qr .box canvas{width:100%!important;height:100%!important;display:block}
+.qr h2{margin:26px 0 6px;font-size:28px}
+.qr p{color:#9AA5AF;font-size:15px}
+.qr .btn{margin-top:28px;background:#fff;color:var(--graphite);border-color:#fff}
+
+/* ── desktop camera: phones use their own camera app instead ─────────── */
+.cam{position:fixed;inset:0;z-index:100;background:var(--graphite);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;text-align:center}
+.cam video{width:min(92vw,560px);aspect-ratio:4/3;object-fit:cover;border-radius:18px;background:#000;transform:scaleX(-1)}
+.cam .bar{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.cam .btn{background:#fff;color:var(--graphite);border-color:#fff}
+.cam .btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.55)}
+.cam .msg{max-width:420px;font-size:15px;line-height:1.5;color:#E6EAEE}
+
+footer{padding:34px 0 44px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;align-items:center;gap:13px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+footer img{height:18px;width:auto}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="navin">
+    <a class="mark" href="/" aria-label="ExonoPeeps home"><img src="../assets/exonopeeps.png" alt="ExonoPeeps"></a>
+    <span class="live" id="live" hidden></span>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- 1 · email ───────────────────────────────────────────── -->
+  <section class="step" id="s-email" hidden>
+    <div class="brandline">
+      <img class="exo" src="../assets/exonome.png" alt="Exonome">
+      <span class="x">&times;</span>
+      <img class="apl" src="../assets/allpeep.svg" alt="AllPeeP">
+    </div>
+    <p class="eye">The Exchange</p>
+    <h1 class="h-lg">You're already on the Exchange.</h1>
+    <p class="lede">Your card is live. Enter the email you registered with, and make it yours before the room starts looking.</p>
+
+    <form id="f-email" novalidate style="margin-top:28px">
+      <div class="formerr" id="email-err" role="alert"></div>
+      <div class="field">
+        <label for="email">Your email</label>
+        <input id="email" type="email" maxlength="50" autocomplete="email" inputmode="email"
+               autocapitalize="off" spellcheck="false" enterkeyhint="send" placeholder="you@company.com" required>
+        <p class="hint">The one you used to register for the event.</p>
+      </div>
+      <button class="btn full" type="submit" id="b-email"><span>Send my code</span></button>
+    </form>
+  </section>
+
+  <!-- 2 · code ────────────────────────────────────────────── -->
+  <section class="step" id="s-code" hidden>
+    <p class="eye">Check your email</p>
+    <h1 class="h-md">Enter the 6-digit code.</h1>
+    <p class="lede" id="code-lede">If you're on the list, it's on its way.</p>
+
+    <form id="f-code" novalidate style="margin-top:26px">
+      <div class="formerr" id="code-err" role="alert"></div>
+      <div class="field">
+        <label for="code" class="hp">Code</label>
+        <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*"
+               maxlength="6" enterkeyhint="go" placeholder="······" required>
+      </div>
+      <button class="btn full" type="submit" id="b-code"><span>Open my card</span></button>
+      <div class="dev" id="devcode" hidden></div>
+    </form>
+
+    <div class="again">
+      <button class="lnk" type="button" id="resend" disabled>Send a new code</button>
+      <button class="lnk" type="button" id="other">Use a different email</button>
+    </div>
+  </section>
+
+  <!-- 3 · the card ────────────────────────────────────────── -->
+  <section class="step" id="s-card" hidden>
+    <p class="eye" id="hello">Welcome</p>
+    <h1 class="h-md">This is you, live on the Exchange.</h1>
+    <p class="lede">Claim it and you're discoverable: people at the Exchange can find your card and send you introductions by email. Make it sound like you &mdash; the preview changes as you type.</p>
+
+    <div class="card" id="preview" aria-live="polite">
+      <div class="ph"><span class="ini" id="pv-ini"></span><img id="pv-img" alt="" hidden><span class="cat" id="pv-cat" hidden></span></div>
+      <span class="badge">Live</span>
+      <div class="bd">
+        <h3 id="pv-name"></h3>
+        <p class="ds" id="pv-ds"></p>
+        <div class="tg" id="pv-tg"></div>
+      </div>
+    </div>
+
+    <div class="note" id="pausednote" hidden><b>Your card is paused.</b> No one can find or contact you on the Exchange. Tick <i>Be discoverable</i> below and save to put it back.</div>
+    <div class="note" id="frozen" hidden><b>Editing is paused for a moment.</b> Your card is safe. Try again shortly.</div>
+
+    <form id="f-card" novalidate>
+      <div class="formerr" id="card-err" role="alert"></div>
+
+      <section class="grp">
+        <h2 class="h-sm">Your photo</h2>
+        <p class="lede">A face gets more introductions than initials. It goes live as soon as you pick it.</p>
+        <div class="photobtns">
+          <button type="button" class="btn ghost sm" id="b-selfie">Take a selfie</button>
+          <button type="button" class="btn ghost sm" id="b-pick">Choose a photo</button>
+        </div>
+        <p class="pstat" id="pstat" aria-live="polite"></p>
+        <button class="lnk" type="button" id="b-unphoto" hidden>Remove photo</button>
+        <input class="hp" id="in-selfie" type="file" accept="image/*" capture="user" tabindex="-1" aria-hidden="true">
+        <input class="hp" id="in-pick" type="file" accept="image/*" tabindex="-1" aria-hidden="true">
+      </section>
+
+      <section class="grp">
+        <h2 class="h-sm">What you offer</h2>
+        <p class="lede">What you do, who it's for, and what a good introduction to you looks like.</p>
+        <div class="field">
+          <label for="description">About you <span class="count" id="description-c"></span></label>
+          <textarea id="description" maxlength="600"></textarea>
+          <p class="hint">No web addresses or emails here.</p>
+          <p class="fielderr" id="description-e"></p>
+        </div>
+      </section>
+
+      <section class="grp">
+        <h2 class="h-sm">What you're looking for</h2>
+        <p class="lede">Tap everything that applies. This is how the right people find you.</p>
+        <div class="chips" id="chips" role="group" aria-label="What you're looking for"></div>
+        <p class="hint" id="tags-c"></p>
+        <p class="fielderr" id="tags-e"></p>
+      </section>
+
+      <section class="grp">
+        <h2 class="h-sm">Be discoverable</h2>
+        <label class="consent" for="leads">
+          <input id="leads" type="checkbox">
+          <span><b>Yes, make me discoverable and send introductions to <span id="leads-email"></span></b>
+            <small>I agree that people at The Exchange can find my card and contact me through it, and that introductions are emailed to this address.</small></span>
+        </label>
+        <p class="consent-off" id="leads-off">Leave this unticked and your card is <b>paused</b>: it comes off the Exchange, and no one can find or contact you. You can come back and tick it any time.</p>
+        <p class="fielderr" id="leadsToMe-e"></p>
+      </section>
+
+      <!-- Only the button is sticky: on a phone every line in this bar covers the form. -->
+      <div class="actions">
+        <button class="btn full" type="submit" id="b-save"><span>Save my card</span></button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 4 · done ────────────────────────────────────────────── -->
+  <section class="step done" id="s-done" hidden>
+    <div class="tick">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4.5 12.5L9.5 17.5L19.5 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1 class="h-md" id="done-h">You're on the big screen.</h1>
+    <p class="lede" style="margin-top:12px" id="done-p">Look up &mdash; your card just went live for the whole room.</p>
+    <div id="done-card"></div>
+    <div class="doneacts">
+      <button class="btn full" type="button" id="b-show">Show my card</button>
+      <button class="btn ghost full" type="button" id="b-share">Share my card</button>
+      <button class="lnk" type="button" id="b-edit" style="margin-top:6px">Keep editing</button>
+    </div>
+  </section>
+
+  <!-- loading -->
+  <section class="step" id="s-load" style="text-align:center;color:var(--muted)">Opening&hellip;</section>
+
+</main>
+
+<!-- full-screen QR: hand your phone across the table -->
+<div class="cam" id="cam" hidden role="dialog" aria-modal="true" aria-label="Take a selfie">
+  <video id="cam-v" autoplay playsinline muted></video>
+  <p class="msg" id="cam-msg" hidden></p>
+  <div class="bar">
+    <button class="btn ghost" type="button" id="cam-cancel">Cancel</button>
+    <button class="btn" type="button" id="cam-snap" disabled>Take photo</button>
+  </div>
+</div>
+
+<div class="qr" id="qr" hidden role="dialog" aria-modal="true" aria-labelledby="qr-name">
+  <div class="box" id="qr-box"></div>
+  <h2 id="qr-name"></h2>
+  <p>Scan to see my card and send me an introduction.</p>
+  <button class="btn" type="button" id="qr-close">Done</button>
+</div>
+
+<footer>
+  <div class="wrap">
+    <img src="../assets/exonome.png" alt="Exonome">
+    <span>The Exchange &middot; SF Tech Week &middot; October 8, 2026</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+
+  // The Worker holds the partner key and signs the session. This page holds nothing secret.
+  // Locally the page runs on a static server (e.g. :5500) and the Worker on `wrangler dev`
+  // (:8787); same hostname keeps the session cookie same-site.
+  var API = (function(){
+    var h = location.hostname;
+    if ((h === '127.0.0.1' || h === 'localhost') && location.port !== '8787') return 'http://' + h + ':8787';
+    return '';
+  })();
+
+  var LIMIT = {description:600, tags:100};
+  var MAX_EDGE = 1200, JPEG_Q = 0.85, MAX_BYTES = 20 * 1024 * 1024;
+  var RESEND_S = 30;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var card = null;          // what the Worker last told us
+  var email = '';
+  var tags = [];
+
+  /* ── plumbing ──────────────────────────────────────── */
+  function api(path, opts){
+    opts = opts || {};
+    opts.credentials = 'include';
+    if (opts.json !== undefined){
+      opts.method = opts.method || 'POST';
+      opts.headers = {'Content-Type':'application/json'};
+      opts.body = JSON.stringify(opts.json);
+      delete opts.json;
+    }
+    return fetch(API + path, opts).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(b){
+        if (!r.ok || b.success === false){
+          var e = new Error(b.error || 'That didn’t go through. Please try again.');
+          e.status = r.status; e.field = b.field;
+          throw e;
+        }
+        return b.data || {};
+      });
+    }, function(){
+      throw new Error('We couldn’t reach the Exchange. Check your connection and try again.');
+    });
+  }
+
+  function show(id){
+    ['s-load','s-email','s-code','s-card','s-done'].forEach(function(s){ $(s).hidden = s !== id; });
+    scrollTo({top:0});
+    var focus = {'s-email':'email','s-code':'code'}[id];
+    if (focus) setTimeout(function(){ $(focus).focus(); }, 60);
+  }
+
+  function busy(btn, on, label){
+    btn.disabled = on;
+    var sp = btn.querySelector('.spin');
+    if (on && !sp){ sp = document.createElement('span'); sp.className = 'spin'; btn.insertBefore(sp, btn.firstChild); }
+    if (!on && sp) sp.remove();
+    if (label) btn.querySelector('span:last-child').textContent = label;
+  }
+
+  function banner(id, msg){
+    var el = $(id);
+    el.textContent = msg || '';
+    el.classList.toggle('on', !!msg);
+  }
+
+  function setErr(id, msg){
+    var box = $(id + '-e'), el = $(id);
+    if (box){ box.textContent = msg || ''; box.classList.toggle('on', !!msg); }
+    if (el && el.setAttribute){ msg ? el.setAttribute('aria-invalid','true') : el.removeAttribute('aria-invalid'); }
+  }
+
+  function initials(name){
+    return (name || '?').split(/\s+/).filter(Boolean).slice(0, 2)
+      .map(function(w){ return w[0]; }).join('').toUpperCase();
+  }
+
+  function firstName(name){ return (name || '').split(/\s+/)[0] || ''; }
+
+  // Same rule the Worker and Partner API enforce: no web addresses (or emails) in the card text.
+  // Copied from the API's UrlDetector.cs (v3.2.0); keep the three in step.
+  var URLISH = (function(){
+    var tlds = 'com|net|org|edu|gov|io|co|ai|me|app|dev|us|uk|ca|au|nz|de|fr|eu|biz|info|xyz|site|' +
+      'online|store|shop|tech|ly|gg|tv|fm|sh|vc|cloud|digital|agency|club|live|link|page|' +
+      'ventures|capital|group|global|world|studio|design|media|network|solutions|services|' +
+      'company|business|consulting|partners|work|works|events|community|social|email';
+    var label = '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?';
+    return new RegExp('(?:\\b[a-z][a-z0-9+.-]*://)|(?:\\bwww\\.)|(?:\\b' + label + '(?:\\.' + label +
+      ')*\\.(?:' + tlds + ')(?![a-z0-9-]))', 'i');
+  })();
+
+  /* ── this person's status (the claim is about one person, not the room) ── */
+  function refreshLive(){
+    var p = $('live');
+    p.classList.remove('on', 'off');
+    if (!card){ p.hidden = true; return; }
+    if (card.paused){ p.textContent = 'Paused'; p.classList.add('off'); }
+    else if (card.accepted && card.leadsToMe){ p.textContent = 'Claimed · live'; p.classList.add('on'); }
+    else { p.textContent = 'Not claimed yet'; }
+    p.hidden = false;
+  }
+
+  /* ── 1 · email ─────────────────────────────────────── */
+  $('f-email').addEventListener('submit', function(e){
+    e.preventDefault();
+    banner('email-err');
+    var v = $('email').value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){
+      banner('email-err', 'That doesn’t look like an email address.');
+      return $('email').focus();
+    }
+    sendCode(v, $('b-email'));
+  });
+
+  function sendCode(v, btn){
+    busy(btn, true);
+    return api('/api/claim/start', {json:{email:v}}).then(function(d){
+      busy(btn, false);
+      email = v;
+      $('code-lede').innerHTML = 'If <b></b> is on the list, a code is on its way. It works for 10 minutes.';
+      $('code-lede').querySelector('b').textContent = v;
+      $('code').value = '';
+      banner('code-err');
+      // Local testing only: the Worker echoes the code when DEV_ECHO_CODE=1.
+      if (d.dev){
+        $('devcode').hidden = false;
+        $('devcode').innerHTML = d.dev.found
+          ? 'Dev: code <b>' + d.dev.code + '</b> (not emailed)'
+          : 'Dev: this email has no card. The real flow emails a “not on the list” note.';
+      } else {
+        $('devcode').hidden = true;
+      }
+      show('s-code');
+      countdown();
+    }).catch(function(err){
+      busy(btn, false);
+      banner(btn.id === 'b-email' ? 'email-err' : 'code-err', err.message);
+    });
+  }
+
+  var timer = null;
+  function countdown(){
+    var left = RESEND_S, b = $('resend');
+    clearInterval(timer);
+    b.disabled = true;
+    b.textContent = 'Send a new code in ' + left + 's';
+    timer = setInterval(function(){
+      left -= 1;
+      if (left <= 0){ clearInterval(timer); b.disabled = false; b.textContent = 'Send a new code'; }
+      else b.textContent = 'Send a new code in ' + left + 's';
+    }, 1000);
+  }
+
+  $('resend').addEventListener('click', function(){ sendCode(email, $('resend')); });
+  $('other').addEventListener('click', function(){ banner('email-err'); show('s-email'); });
+
+  /* ── 2 · code ──────────────────────────────────────── */
+  $('code').addEventListener('input', function(){
+    var v = this.value.replace(/\D/g, '').slice(0, 6);
+    if (v !== this.value) this.value = v;
+    // iOS fills all six digits at once from Mail; go straight on.
+    if (v.length === 6) submitCode();
+  });
+  $('f-code').addEventListener('submit', function(e){ e.preventDefault(); submitCode(); });
+
+  var verifying = false;
+  function submitCode(){
+    var v = $('code').value.replace(/\D/g, '');
+    if (verifying) return;
+    if (v.length !== 6){ banner('code-err', 'The code is 6 digits.'); return; }
+    verifying = true;
+    banner('code-err');
+    busy($('b-code'), true);
+    api('/api/claim/verify', {json:{email:email, code:v}}).then(function(d){
+      verifying = false;
+      busy($('b-code'), false);
+      openCard(d);
+    }).catch(function(err){
+      verifying = false;
+      busy($('b-code'), false);
+      banner('code-err', err.message);
+      $('code').select();
+    });
+  }
+
+  /* ── 3 · the card ──────────────────────────────────── */
+  function openCard(d){
+    card = d;
+    email = d.email;
+    tags = (d.tags || []).slice();
+
+    $('hello').textContent = 'Welcome, ' + (firstName(d.name) || 'there');
+    $('description').value = d.description || '';
+    $('leads').checked = !!(d.accepted && d.leadsToMe && !d.paused);
+    $('pausednote').hidden = !d.paused;
+    $('frozen').hidden = !d.frozen;
+    $('b-save').disabled = !!d.frozen;
+    leadsCopy();
+    buildChips(d.vocab || []);
+    ['description','tags','leadsToMe'].forEach(function(f){ setErr(f, ''); });
+    banner('card-err');
+    $('preview').classList.remove('saved');
+    counts();
+    paint();
+    photoControls();
+    pstat('');
+    show('s-card');
+    refreshLive();
+  }
+
+  function leadsCopy(){
+    $('leads-email').textContent = email;
+    $('leads-off').hidden = $('leads').checked;
+    saveLabel();
+  }
+  // The button says what Save will do, so nobody pauses their card by accident.
+  function saveLabel(){
+    var b = $('b-save');
+    if (!b.disabled) b.querySelector('span:last-child').textContent = $('leads').checked ? 'Save my card' : 'Save and pause my card';
+  }
+  $('leads').addEventListener('change', function(){
+    // Switching off only works if the Worker knows where to hand leads back to.
+    if (!this.checked && card && card.leadsToMe && !card.canHandBack){
+      this.checked = true;
+      setErr('leadsToMe', 'Ask an organiser to stop introductions coming to you.');
+    }
+    leadsCopy();
+  });
+
+  function buildChips(vocab){
+    var all = vocab.slice();
+    tags.forEach(function(t){ if (all.indexOf(t) < 0) all.push(t); });
+    var box = $('chips');
+    box.innerHTML = '';
+    all.forEach(function(t){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = t;
+      b.setAttribute('aria-pressed', tags.indexOf(t) >= 0 ? 'true' : 'false');
+      b.addEventListener('click', function(){
+        var i = tags.indexOf(t);
+        if (i >= 0) tags.splice(i, 1);
+        else if (tags.concat(t).join(';').length <= LIMIT.tags) tags.push(t);
+        else return setErr('tags', 'That’s the most that fit. Untick one first.');
+        setErr('tags', '');
+        b.setAttribute('aria-pressed', i >= 0 ? 'false' : 'true');
+        counts(); paint();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function counts(){
+    [['description', LIMIT.description]].forEach(function(p){
+      var n = $(p[0]).value.length, c = $(p[0] + '-c');
+      c.textContent = n + '/' + p[1];
+      c.classList.toggle('warn', n >= p[1] * 0.9);
+    });
+    var used = tags.join(';').length;
+    $('tags-c').textContent = tags.length
+      ? tags.length + ' picked · ' + (LIMIT.tags - used) + ' characters left'
+      : 'Nothing picked yet.';
+  }
+
+  // Paint the preview from the form, so what they see is what the room will see.
+  function paint(target){
+    var root = target || $('preview');
+    var q = function(sel){ return root.querySelector(sel); };
+    var name = card.name || '';
+    q('.ini').textContent = initials(name);
+    q('h3').textContent = name;
+    q('.ds').textContent = $('description').value.trim();
+    var cat = q('.cat');
+    cat.textContent = card.category || ''; cat.hidden = !card.category;
+
+    var img = q('img');
+    if (card.photoUrl){
+      if (img.getAttribute('src') !== card.photoUrl){
+        img.hidden = true;
+        img.onload = function(){ img.hidden = false; };
+        img.onerror = function(){ img.hidden = true; };   // no hero yet: initials stay
+        img.src = card.photoUrl;
+      }
+    } else { img.hidden = true; img.removeAttribute('src'); }
+
+    var tg = q('.tg');
+    tg.innerHTML = '';
+    tags.forEach(function(t){ var s = document.createElement('span'); s.textContent = t; tg.appendChild(s); });
+
+  }
+
+  ['description'].forEach(function(id){
+    $(id).addEventListener('input', function(){
+      if ($(id).getAttribute('aria-invalid')) check(id);
+      counts(); paint();
+    });
+    $(id).addEventListener('blur', function(){ check(id); });
+  });
+
+  function check(id){
+    var v = $(id).value.trim(), msg = '';
+    if (id === 'description' && !v) msg = 'Tell people what you offer.';
+    else if (v.length > LIMIT[id]) msg = 'Keep this under ' + LIMIT[id] + ' characters.';
+    else if (URLISH.test(v)) msg = 'Leave web addresses and emails out of this.';
+    setErr(id, msg);
+    return !msg;
+  }
+
+  /* ── photo: upload the moment it's picked ──────────── */
+  // Phones: the input's capture="user" opens the phone's own camera app, which is the best
+  // experience there. Computers ignore capture and would show a file picker, so they get a
+  // live camera view on the page instead (getUserMedia; works on https and on localhost).
+  var TOUCH = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+  var camStream = null, camFallback = false;
+
+  $('b-selfie').addEventListener('click', function(){
+    if (TOUCH || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return $('in-selfie').click();
+    openCam();
+  });
+
+  function openCam(){
+    var v = $('cam-v'), msg = $('cam-msg'), snap = $('cam-snap');
+    camFallback = false;
+    msg.hidden = true; v.hidden = false;
+    snap.disabled = true; snap.textContent = 'Take photo';
+    $('cam').hidden = false;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false })
+      .then(function(stream){
+        camStream = stream;
+        v.srcObject = stream;
+        snap.disabled = false;
+        snap.focus();
+      })
+      .catch(function(err){
+        // Blocked, no camera, or in use by another app: say so and offer the file picker.
+        v.hidden = true;
+        msg.hidden = false;
+        msg.textContent = err && err.name === 'NotAllowedError'
+          ? 'Camera access is blocked. Allow it in your browser’s address bar, or choose a photo instead.'
+          : 'We couldn’t find a camera to use. Choose a photo instead.';
+        camFallback = true;
+        snap.disabled = false;
+        snap.textContent = 'Choose a photo';
+        snap.focus();
+      });
+  }
+
+  function closeCam(){
+    if (camStream) camStream.getTracks().forEach(function(t){ t.stop(); });
+    camStream = null;
+    $('cam-v').srcObject = null;
+    $('cam').hidden = true;
+    $('b-selfie').focus();
+  }
+
+  $('cam-cancel').addEventListener('click', closeCam);
+  $('cam-snap').addEventListener('click', function(){
+    if (camFallback){ closeCam(); return $('in-pick').click(); }
+    var v = $('cam-v');
+    if (!v.videoWidth) return;
+    var c = document.createElement('canvas');
+    c.width = v.videoWidth; c.height = v.videoHeight;
+    var ctx = c.getContext('2d');
+    // Save it the way they saw it: the preview is mirrored, like a mirror.
+    ctx.translate(c.width, 0); ctx.scale(-1, 1);
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    c.toBlob(function(b){
+      closeCam();
+      if (b) upload(new File([b], 'selfie.jpg', { type: 'image/jpeg' }));
+    }, 'image/jpeg', 0.9);
+  });
+  $('b-pick').addEventListener('click', function(){ $('in-pick').click(); });
+  $('in-selfie').addEventListener('change', function(){ upload(this.files[0]); this.value = ''; });
+  $('in-pick').addEventListener('change', function(){ upload(this.files[0]); this.value = ''; });
+
+  function pstat(msg, cls){
+    var p = $('pstat');
+    p.textContent = msg || '';
+    p.className = 'pstat' + (cls ? ' ' + cls : '');
+  }
+
+  function photoControls(){
+    // Only a real photo can be removed; a card on its initials has nothing to remove.
+    $('b-unphoto').hidden = !(card && card.hasPhoto);
+  }
+
+  // Remove photo: draw the same initials tile the preview shows and make it the card's image, so
+  // Exonome shows initials again. The Partner API can set an image but not delete one.
+  $('b-unphoto').addEventListener('click', function(){
+    var prev = card.photoUrl;
+    pstat('Removing your photo…');
+    $('b-unphoto').hidden = true;
+    initialsTile(card.name).then(function(blob){
+      var fd = new FormData();
+      fd.append('photo', blob, 'initials.png');
+      fd.append('reset', '1');
+      return api('/api/claim/photo', {method:'POST', body:fd});
+    }).then(function(d){
+      card.photoUrl = d.photoUrl || null;   // the new initials tile, straight from storage
+      card.hasPhoto = false;
+      paint();
+      photoControls();
+      pstat('Photo removed. Your initials are back.', 'ok');
+    }).catch(function(err){
+      card.photoUrl = prev;
+      paint();
+      photoControls();
+      pstat(err.message || 'We couldn’t remove it. Try again.', 'err');
+    });
+  });
+
+  // The same tile the POC import made for every card (EXONOME-POC tools/PocBuilder/initials-tiles.ps1):
+  // 1200x900, one flat colour from its palette, white initials in Segoe UI Semibold 260px, initials
+  // from the first and last words of the name. The import chose the colour by hashing its own key,
+  // which the page doesn't have; hashing the name the same way keeps each person's colour stable.
+  var TILE_PALETTE = ['#312e81','#3730a3','#4338ca','#1e3a8a','#0f766e','#9a3412','#be123c','#6d28d9'];
+  function tileInitials(name){
+    var parts = String(name || '').split(/\s+/).filter(function(w){ return /\p{L}/u.test(w); });
+    if (!parts.length) return '?';
+    return (parts[0].charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+  }
+  function tileColour(key){
+    var h = 0;
+    for (var i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) % 1000003;
+    return TILE_PALETTE[h % TILE_PALETTE.length];
+  }
+  function initialsTile(name){
+    var W = 1200, H = 900;
+    var c = document.createElement('canvas'); c.width = W; c.height = H;
+    var g = c.getContext('2d');
+    g.fillStyle = tileColour(String(name || '')); g.fillRect(0, 0, W, H);
+    g.fillStyle = '#FFFFFF';
+    g.font = '600 260px "Segoe UI Semibold", "Segoe UI", system-ui, -apple-system, sans-serif';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(tileInitials(name), W / 2, H / 2);
+    return new Promise(function(resolve, reject){
+      c.toBlob(function(b){ b ? resolve(b) : reject(new Error('We couldn’t draw your initials.')); }, 'image/png');
+    });
+  }
+
+  function upload(file){
+    if (!file) return;
+    if (!/^image\//.test(file.type)) return pstat('That file isn’t an image.', 'err');
+    if (file.size > MAX_BYTES) return pstat('That image is too large. Try another.', 'err');
+
+    var prev = card.photoUrl;
+    pstat('Getting it ready…');
+    shrink(file).then(function(blob){
+      // Show it straight away; put the old one back if the upload fails.
+      card.photoUrl = URL.createObjectURL(blob);
+      paint();
+      pstat('Putting it on your card…');
+      var fd = new FormData();
+      fd.append('photo', blob, 'photo.jpg');
+      return api('/api/claim/photo', {method:'POST', body:fd});
+    }).then(function(d){
+      if (d.photoUrl) card.photoUrl = d.photoUrl;
+      card.hasPhoto = true;
+      paint();
+      photoControls();
+      pstat('Your photo is live.', 'ok');
+    }).catch(function(err){
+      card.photoUrl = prev;
+      paint();
+      photoControls();
+      pstat(err.message || 'We couldn’t use that photo. Try another.', 'err');
+    });
+  }
+
+  // Keep the whole frame, just smaller: cropping here would guess wrong about where the face
+  // is. A phone photo is 3-6MB, which is slow on event wifi and far bigger than a card needs.
+  function shrink(file){
+    return new Promise(function(resolve, reject){
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function(){
+        URL.revokeObjectURL(url);
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || !h) return reject(new Error('We couldn’t read that image.'));
+        var s = Math.min(1, MAX_EDGE / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * s); c.height = Math.round(h * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function(b){ b ? resolve(b) : reject(new Error('We couldn’t read that image.')); }, 'image/jpeg', JPEG_Q);
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('We couldn’t read that image. Try a JPEG or PNG.')); };
+      img.src = url;
+    });
+  }
+
+  /* ── save ──────────────────────────────────────────── */
+  $('f-card').addEventListener('submit', function(e){
+    e.preventDefault();
+    banner('card-err');
+    var bad = ['description'].filter(function(id){ return !check(id); });
+    if (bad.length){
+      $(bad[0]).focus();
+      $(bad[0]).scrollIntoView({block:'center', behavior:'smooth'});
+      return;
+    }
+    busy($('b-save'), true, 'Saving…');
+    api('/api/claim/save', {json:{
+      description: $('description').value.trim(),
+      tags:        tags,
+      leadsToMe:   $('leads').checked
+    }}).then(function(d){
+      busy($('b-save'), false);
+      card = d;
+      tags = (d.tags || []).slice();
+      done();
+    }).catch(function(err){
+      busy($('b-save'), false);
+      saveLabel();
+      if (err.status === 401) return restart();
+      if (err.field && $(err.field + '-e')){
+        setErr(err.field, err.message);
+        var el = $(err.field) || $(err.field + '-e');
+        el.scrollIntoView({block:'center', behavior:'smooth'});
+      } else {
+        banner('card-err', err.message);
+        $('card-err').scrollIntoView({block:'center', behavior:'smooth'});
+      }
+    });
+  });
+
+  /* ── 4 · done ──────────────────────────────────────── */
+  function done(){
+    var copy = $('preview').cloneNode(true);
+    copy.removeAttribute('id');
+    Array.prototype.forEach.call(copy.querySelectorAll('[id]'), function(n){ n.removeAttribute('id'); });
+    copy.classList.add('saved');
+    $('done-card').innerHTML = '';
+    $('done-card').appendChild(copy);
+    paint(copy);
+    var live = !card.paused;
+    $('done-h').textContent = live ? 'You’re on the big screen.' : 'Your card is paused.';
+    $('done-p').textContent = live
+      ? 'Look up — your card just went live for the whole room, and introductions come to ' + card.email + '.'
+      : 'It’s off the Exchange, so no one can find or contact you. Come back and tick “Be discoverable” any time.';
+    copy.classList.toggle('saved', live);
+    $('b-share').hidden = !live || !card.pageUrl;
+    $('b-show').hidden = !live || !card.pageUrl;
+    show('s-done');
+    refreshLive();
+  }
+
+  $('b-edit').addEventListener('click', function(){ openCard(card); });
+
+  $('b-share').addEventListener('click', function(){
+    var data = {title: card.name + ' on the Exchange', url: card.pageUrl};
+    if (navigator.share) return navigator.share(data).catch(function(){});
+    navigator.clipboard && navigator.clipboard.writeText(card.pageUrl).then(function(){
+      $('b-share').textContent = 'Link copied';
+      setTimeout(function(){ $('b-share').textContent = 'Share my card'; }, 2000);
+    });
+  });
+
+  // QR drawn on the phone, so it works on flaky wifi once the library is cached.
+  var qrLib = null;
+  function loadQr(){
+    if (qrLib) return qrLib;
+    qrLib = new Promise(function(resolve, reject){
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      s.onload = function(){ resolve(window.QRCode); };
+      s.onerror = function(){ qrLib = null; reject(); };
+      document.head.appendChild(s);
+    });
+    return qrLib;
+  }
+
+  $('b-show').addEventListener('click', function(){
+    loadQr().then(function(QR){
+      var box = $('qr-box');
+      box.innerHTML = '';
+      new QR(box, {text: card.pageUrl, width: 512, height: 512, correctLevel: QR.CorrectLevel.M});
+      $('qr-name').textContent = card.name;
+      $('qr').hidden = false;
+      $('qr-close').focus();
+    }).catch(function(){
+      banner('card-err', 'Couldn’t draw the code. Use Share instead.');
+    });
+  });
+  $('qr-close').addEventListener('click', function(){ $('qr').hidden = true; $('b-show').focus(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    $('qr').hidden = true;
+    if (!$('cam').hidden) closeCam();
+  });
+
+  /* ── session ended (12 h) — back to the email step ── */
+  function restart(){
+    card = null; email = '';
+    refreshLive();
+    $('email').value = '';
+    banner('email-err', '');
+    show('s-email');
+  }
+
+  /* ── start ─────────────────────────────────────────── */
+  refreshLive();
+
+  // The email's "open your card" link carries the code in the fragment, which never
+  // reaches a server log. Use it once, then wipe it from the address bar.
+  function fromLink(){
+    var hash = new URLSearchParams(location.hash.slice(1));
+    if (!hash.get('email') || !hash.get('code')) return false;
+    history.replaceState(null, '', location.pathname + location.search);
+    email = hash.get('email').trim().toLowerCase();
+    $('code').value = hash.get('code').replace(/\D/g, '').slice(0, 6);
+    $('code-lede').textContent = 'Opening your card…';
+    show('s-code');
+    submitCode();
+    return true;
+  }
+  // A fragment-only change does not reload the page, so a link opened in a tab that
+  // already shows this page arrives here instead.
+  addEventListener('hashchange', fromLink);
+
+  if (!fromLink()){
+    // Coming back within the day: go straight to the card.
+    api('/api/claim/me').then(openCard).catch(function(){ show('s-email'); });
+  }
+
+})();
+</script>
+</body></html>

@@ -3,22 +3,79 @@ main = "src/index.js"
 compatibility_date = "2026-09-16"
 
 # The site itself stays on GitHub Pages. This Worker claims only /api/*, so every other
-# path still falls through to Pages exactly as it does today.
+# path still falls through to Pages exactly as it does today. GitHub Pages serves the apex
+# (CNAME = exonopeeps.com) and 301s www to it, so the apex route is the one pages actually call;
+# www stays for anything that still posts there.
+[[routes]]
+pattern = "exonopeeps.com/api/*"
+zone_name = "exonopeeps.com"
+
 [[routes]]
 pattern = "www.exonopeeps.com/api/*"
 zone_name = "exonopeeps.com"
 
+# Claim flow state: codes, claims, change log. Create once with
+#   wrangler d1 create exonopeeps-claim
+# paste the database_id it prints below, then apply the schema:
+#   wrangler d1 migrations apply exonopeeps-claim --remote
+[[d1_databases]]
+binding = "DB"
+database_name = "exonopeeps-claim"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+migrations_dir = "migrations"
+
+# Codes go out through SendGrid (secret SENDGRID_API_KEY, sender EMAIL_FROM). Cloudflare Email Service
+# is also supported but needs the Workers paid plan; to switch, onboard exonopeeps.com under
+# Compute > Email Service > Email Sending and uncomment this binding — when bound it takes precedence.
+# [[send_email]]
+# name = "EMAIL"
+
 [vars]
 EXONOME_API_BASE = "https://partners.exono.me"
 EVENT_NAME       = "The Exchange"
+# Shown under the event name in the claim email footer.
+EVENT_LINE       = "SF Tech Week · October 8, 2026"
 # EntityMapping.Status: 0 = pending, 4 = Live. Leads publish straight to the market.
 LISTING_STATUS   = "4"
+
+# ── claim ──────────────────────────────────────────────────────────────────
+# The market whose cards can be claimed: The Exchange 2026. Falls back to EXONOME_MOID.
+CLAIM_MOID       = "2322"
+# Optional: limit claiming to the imported participant cards.
+CLAIM_OFID_MIN   = "6226"
+CLAIM_OFID_MAX   = "6277"
+# Optional: only cards owned by the event's house seller ("Exchange 2026").
+CLAIM_SPID       = "3356"
+SITE_ORIGIN      = "https://exonopeeps.com"
+PUBLIC_BASE      = "https://connect.exono.me"
+# Where "send introductions to me" hands leads back to when switched off.
+EVENT_INBOX      = "theexchange@trickly.io"
+# A sender SendGrid has verified.
+EMAIL_FROM       = "noreply@exono.me"
+EMAIL_FROM_NAME  = "ExonoPeeps (The Exchange)"
+# Starts every claim email subject: "<prefix> - Action required: ...".
+EMAIL_SUBJECT_PREFIX = "The Exchange 2026"
+# SendGrid dynamic template for the claim email (worker/email/claim-code.html). Not secret.
+# Empty = send the built-in copy instead.
+SENDGRID_TEMPLATE_ID = "d-88ba590f17344d338fed14324b804158"
+# Where Exonome keeps offering images (exono.me tenant). The page and the wall show
+# <IMAGE_BASE>/<OFID>/of_hero.png, the same image the market shows. Empty = the page draws initials.
+IMAGE_BASE       = "https://tricklyioazurestorage.blob.core.windows.net/offerings"
+# "What I'm looking for" chips. Lowercase, comma separated; stored ;-separated in Tags (100 chars).
+TAG_VOCAB        = "customers,partners,investors,hiring,talent,advisors,pilots,distribution,press,cofounder,feedback,intros"
+# "1" stops every edit and photo upload at once, without a deploy of code.
+FREEZE_EDITS     = "0"
 
 # Secrets are NOT set here — anything in this file is committed to a public repo.
 # Set them once per environment:
 #
-#   wrangler secret put EXONOME_API_KEY   # partner key: offerings:write + entity-mappings:write
-#   wrangler secret put EXONOME_SPID      # seller the leads attach to
-#   wrangler secret put EXONOME_MOID      # market the leads land in
+#   wrangler secret put EXONOME_API_KEY   # partner key: offerings:read, offerings:write,
+#                                         #   entity-mappings:read, entity-mappings:write
+#   wrangler secret put EXONOME_SPID      # seller walk-up leads attach to
+#   wrangler secret put EXONOME_MOID      # market walk-up leads land in
+#   wrangler secret put SESSION_SECRET    # 32+ random bytes; signs sessions, hashes codes/emails
+#   wrangler secret put SENDGRID_API_KEY  # sends the sign-in code
 #
 # Verify with:  wrangler secret list
+#
+# Local testing reads the same names from worker/.dev.vars (gitignored). See .dev.vars.example.

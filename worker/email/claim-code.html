@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!--
+  SendGrid dynamic template: "The Exchange — claim code"
+  One template covers both replies to the claim page; the Worker sets `found`.
+
+  Subject: set the template version's Subject field to exactly
+    {{{subject}}}
+  (three braces: two would HTML-escape it, turning an apostrophe into &apos;)
+  The Worker sends the wording (e.g. "The Exchange 2026 - Action required: your code is 843174"), so it changes in code,
+  not here.
+
+  dynamic_template_data (sent by worker/src/claim.js):
+    subject          the subject line, written by the Worker
+    found            true when the email owns a card; false for the "not on the list" note
+    first_name       participant's first name, or "" (template falls back to a plain greeting)
+    code             "843174"            (found only)
+    code_display     "843 174"           (found only; easier to read aloud and type)
+    minutes          10                  (found only; how long the code works)
+    open_url         https://exonopeeps.com/claim/#email=…&code=…   (found only)
+    site_url         https://exonopeeps.com
+    event_name       "The Exchange"
+    event_line       "SF Tech Week · October 8, 2026"
+
+  Brand tokens (from the site): cream #FDF8F2, graphite #141C24, teal #0C889D / soft #D5EAEE,
+  green #31B28B, line #E7DED2, muted #5C6773. Fonts: Source Sans 3 (display), Inter (body),
+  with system fallbacks because most mail clients ignore web fonts.
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{event_name}}</title>
+<style>
+  body{margin:0;padding:0;background:#FDF8F2}
+  a{color:#0C889D}
+  @media (max-width:520px){
+    .shell{padding:20px 12px!important}
+    .card{padding:26px 22px!important}
+    .code{font-size:34px!important;letter-spacing:6px!important}
+    .h1{font-size:24px!important}
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#FDF8F2;-webkit-text-size-adjust:100%">
+
+<!-- Preheader: the grey line after the subject in the inbox list. -->
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FDF8F2">
+  {{#if found}}Enter {{code_display}} on the page you came from. It works for {{minutes}} minutes.{{else}}We don't have a card under this email. Try the one you registered with.{{/if}}
+  &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FDF8F2">
+<tr><td align="center" class="shell" style="padding:36px 16px">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px">
+
+    <!-- logo -->
+    <tr><td style="padding:0 4px 20px">
+      <a href="{{site_url}}" style="text-decoration:none">
+        <img src="https://cdn.mcauto-images-production.sendgrid.net/08fa249c5473f5f9/3e3077af-4807-4549-944f-3cb05009d9a2/1602x249.png" width="164" height="26" alt="ExonoPeeps"
+             style="display:block;width:164px;height:auto;border:0;font-family:'Source Sans 3',Segoe UI,Arial,sans-serif;font-size:20px;font-weight:700;color:#141C24">
+      </a>
+    </td></tr>
+
+    <!-- card -->
+    <tr><td class="card" style="background:#FFFFFF;border:1px solid #E7DED2;border-radius:18px;padding:32px 30px;font-family:Inter,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#141C24">
+
+      <p style="margin:0 0 14px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C889D">
+        {{event_name}}
+      </p>
+
+      {{#if found}}
+
+      <h1 class="h1" style="margin:0 0 10px;font-family:'Source Sans 3','Segoe UI',Arial,sans-serif;font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.02em;color:#141C24">
+        {{#if first_name}}{{first_name}}, here's your code.{{else}}Here's your code.{{/if}}
+      </h1>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#5C6773">
+        Enter it on the page you just came from, and your card on the Exchange is yours to make your own.
+      </p>
+
+      <!-- the code -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td align="center" style="background:#D5EAEE;border-radius:14px;padding:20px 12px">
+          <span class="code" style="font-family:'SF Mono',Menlo,Consolas,'Courier New',monospace;font-size:40px;line-height:1;font-weight:700;letter-spacing:10px;color:#141C24">{{code_display}}</span>
+        </td></tr>
+      </table>
+      <p style="margin:10px 0 24px;font-size:13px;line-height:1.5;color:#5C6773;text-align:center">
+        Works for {{minutes}} minutes, once.
+      </p>
+
+      <!-- button: bulletproof, so it survives clients that strip CSS -->
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+        <tr><td align="center" bgcolor="#141C24" style="border-radius:999px">
+          <a href="{{open_url}}" target="_blank"
+             style="display:inline-block;padding:14px 28px;font-family:Inter,'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:700;line-height:20px;color:#FFFFFF;text-decoration:none;border-radius:999px">
+            Or open my card &rarr;
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#5C6773;text-align:center">
+        Open it on the same phone you started on.
+      </p>
+
+      {{else}}
+
+      <h1 class="h1" style="margin:0 0 10px;font-family:'Source Sans 3','Segoe UI',Arial,sans-serif;font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.02em;color:#141C24">
+        We couldn't find your card.
+      </h1>
+      <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#141C24">
+        Someone (hopefully you) asked to open a card on {{event_name}} with this email, but we don't have one under it.
+      </p>
+      <p style="margin:0;font-size:15px;line-height:1.6;color:#5C6773">
+        If you registered with a different email, try that one on the page you came from.
+      </p>
+
+      {{/if}}
+
+      <!-- divider + safety line -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px">
+        <tr><td style="border-top:1px solid #E7DED2;padding-top:16px;font-size:12px;line-height:1.55;color:#5C6773">
+          Didn't ask for this? You can ignore this email &mdash; nothing changes unless the code is used.
+        </td></tr>
+      </table>
+
+    </td></tr>
+
+    <!-- footer -->
+    <tr><td style="padding:20px 4px 0;font-family:Inter,'Segoe UI',Arial,sans-serif;font-size:12px;line-height:1.6;color:#5C6773">
+      <span style="color:#31B28B">&#9679;</span>&nbsp; {{event_name}} &middot; {{event_line}}<br>
+      <a href="{{site_url}}" style="color:#5C6773;text-decoration:underline">exonopeeps.com</a>
+    </td></tr>
+
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

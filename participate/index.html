@@ -259,17 +259,9 @@ footer img{height:20px;width:auto;filter:brightness(1.35)}
       <div class="field">
         <label for="tags">Tags</label>
         <input id="tags" name="tags" type="text" maxlength="120"
-               enterkeyhint="next" placeholder="fintech, b2b, early-stage">
+               enterkeyhint="done" placeholder="fintech, b2b, early-stage">
         <p class="hint">Optional. Comma separated &mdash; helps people find you.</p>
         <p class="fielderr" id="tags-e"></p>
-      </div>
-
-      <div class="field">
-        <label for="link">Link</label>
-        <input id="link" name="link" type="url" maxlength="300" inputmode="url"
-               enterkeyhint="done" placeholder="https://your-site.com">
-        <p class="hint">Optional. Site, LinkedIn, portfolio &mdash; whatever is most useful.</p>
-        <p class="fielderr" id="link-e"></p>
       </div>
     </fieldset>
 
@@ -378,18 +370,30 @@ footer img{height:20px;width:auto;filter:brightness(1.35)}
   /* ── validation ────────────────────────────────────── */
   // Lengths mirror the partner API's own MaxLength attributes, so a value that
   // passes here cannot be rejected by the API for being too long.
+  // noUrl: the Partner API refuses a web address in these fields. Company is exempt — it is
+  // stored in the one column allowed to hold a link.
   var RULES = {
-    name:        {max:50,  required:true, label:'name'},
+    name:        {max:50,  required:true, label:'name', noUrl:true},
     email:       {max:50,  required:true, label:'email', email:true},
     phone:       {max:16,  label:'phone'},
     company:     {max:100, label:'company'},
-    offering:    {max:50,  required:true, label:'headline'},
+    offering:    {max:50,  required:true, label:'headline', noUrl:true},
     category:    {max:60,  required:true, label:'category'},
-    description: {max:600, required:true, label:'description'},
-    specialty:   {max:30,  label:'specialty'},
-    tags:        {max:120, label:'tags'},
-    link:        {max:300, label:'link', url:true}
+    description: {max:600, required:true, label:'description', noUrl:true},
+    specialty:   {max:30,  label:'specialty', noUrl:true},
+    tags:        {max:120, label:'tags', noUrl:true}
   };
+
+  // Copied from the Partner API's UrlDetector.cs (v3.2.0); keep in step with worker/src/lib.js.
+  var URLISH = (function(){
+    var tlds = 'com|net|org|edu|gov|io|co|ai|me|app|dev|us|uk|ca|au|nz|de|fr|eu|biz|info|xyz|site|' +
+      'online|store|shop|tech|ly|gg|tv|fm|sh|vc|cloud|digital|agency|club|live|link|page|' +
+      'ventures|capital|group|global|world|studio|design|media|network|solutions|services|' +
+      'company|business|consulting|partners|work|works|events|community|social|email';
+    var label = '[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?';
+    return new RegExp('(?:\\b[a-z][a-z0-9+.-]*://)|(?:\\bwww\\.)|(?:\\b' + label + '(?:\\.' + label +
+      ')*\\.(?:' + tlds + ')(?![a-z0-9-]))', 'i');
+  })();
 
   function setErr(id, msg){
     var el = $(id), box = $(id + '-e');
@@ -405,8 +409,8 @@ footer img{height:20px;width:auto;filter:brightness(1.35)}
     // Deliberately loose: one @, something either side, a dot in the domain.
     if (r.email && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v))
       return setErr(id, "That doesn't look like an email address.");
-    if (r.url && v && !/^https?:\/\/.+\..+/i.test(v))
-      return setErr(id, 'Include the full address, starting with https://');
+    if (r.noUrl && URLISH.test(v))
+      return setErr(id, 'Please leave web addresses out of this.');
     return setErr(id, '');
   }
 
