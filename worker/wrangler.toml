@@ -21,7 +21,7 @@ zone_name = "exonopeeps.com"
 [[d1_databases]]
 binding = "DB"
 database_name = "exonopeeps-claim"
-database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+database_id = "3fb720b2-9529-4051-a1d9-e76f115b324c"
 migrations_dir = "migrations"
 
 # Codes go out through SendGrid (secret SENDGRID_API_KEY, sender EMAIL_FROM). Cloudflare Email Service
