@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!--
+  SendGrid dynamic template: "Claim — card confirmed"
+  Sent once each time a participant's choice changes: when they make their card discoverable
+  (live), and when they pause it. One template serves every event; the Worker sends the event.
+  Styles follow the code email (ExonoPeePs.WWW worker/email/claim-code.html).
+
+  Subject: set the template version's Subject field to exactly
+    {{{subject}}}
+  (three braces: two would HTML-escape it, turning an apostrophe into &apos;)
+  The Worker writes it, e.g. "The Future of Member Networks - Your card is live".
+
+  dynamic_template_data (sent by claim-worker/src/email.js):
+    subject          the subject line, written by the Worker
+    live             true = discoverable and live; false = paused
+    first_name       participant's first name, or "" (falls back to a plain greeting)
+    email            where introductions now go (live only): the participant's own address
+    edit_url         https://www.exono.me/claim/<slug>/   the page to come back to, any time
+    card_url         the card on the marketplace, https://connect.exono.me/IM/<emid> (live only; may be "")
+    market_name      the marketplace the card is on, e.g. "The Future of Member Networks"
+    event_name       "The Future of Member Networks"
+    event_line       "San Francisco · October 22, 2026", or ""
+    site_url         https://www.exono.me
+    site_host        exono.me
+    logo_url         https://www.exono.me/assets/img/exonome.png  (always the public site, also when testing locally)
+    logo_alt         "Exonome"
+
+  Brand tokens: cream #FDF8F2, graphite #141C24, teal #0C889D / soft #D5EAEE, green #31B28B,
+  line #E7DED2, muted #5C6773. Fonts: Source Sans 3 (display), Inter (body), with system
+  fallbacks because most mail clients ignore web fonts.
+-->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>{{event_name}}</title>
+<style>
+  body{margin:0;padding:0;background:#FDF8F2}
+  a{color:#0C889D}
+  @media (max-width:520px){
+    .shell{padding:20px 12px!important}
+    .card{padding:26px 22px!important}
+    .h1{font-size:24px!important}
+  }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#FDF8F2;-webkit-text-size-adjust:100%">
+
+<!-- Preheader: the grey line after the subject in the inbox list. -->
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#FDF8F2">
+  {{#if live}}People at {{event_name}} can find you now. Keep this email to edit your card any time.{{else}}Your card is off {{event_name}}. Keep this email to put it back any time.{{/if}}
+  &#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FDF8F2">
+<tr><td align="center" class="shell" style="padding:36px 16px">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px">
+
+    <!-- logo -->
+    <tr><td style="padding:0 4px 20px">
+      <a href="{{site_url}}" style="text-decoration:none">
+        <img src="{{logo_url}}" width="140" alt="{{logo_alt}}"
+             style="display:block;width:140px;height:auto;border:0;font-family:'Source Sans 3',Segoe UI,Arial,sans-serif;font-size:20px;font-weight:700;color:#141C24">
+      </a>
+    </td></tr>
+
+    <!-- card -->
+    <tr><td class="card" style="background:#FFFFFF;border:1px solid #E7DED2;border-radius:18px;padding:32px 30px;font-family:Inter,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#141C24">
+
+      <p style="margin:0 0 14px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#0C889D">
+        {{event_name}}
+      </p>
+
+      {{#if live}}
+
+      <h1 class="h1" style="margin:0 0 10px;font-family:'Source Sans 3','Segoe UI',Arial,sans-serif;font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.02em;color:#141C24">
+        {{#if first_name}}{{first_name}}, your card is live.{{else}}Your card is live.{{/if}}
+      </h1>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#5C6773">
+        People at {{event_name}} can find you now, and introductions are emailed to you.
+      </p>
+
+      <!-- where introductions go -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="background:#D5EAEE;border-radius:14px;padding:16px 18px">
+          <p style="margin:0 0 4px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#086F82">Introductions go to</p>
+          <p style="margin:0;font-size:16px;font-weight:700;color:#141C24;word-break:break-all"><a href="mailto:{{email}}" style="color:#141C24;text-decoration:none">{{email}}</a></p>
+        </td></tr>
+      </table>
+
+      {{else}}
+
+      <h1 class="h1" style="margin:0 0 10px;font-family:'Source Sans 3','Segoe UI',Arial,sans-serif;font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.02em;color:#141C24">
+        {{#if first_name}}{{first_name}}, your card is paused.{{else}}Your card is paused.{{/if}}
+      </h1>
+      <p style="margin:0 0 4px;font-size:15px;line-height:1.6;color:#5C6773">
+        It's off {{event_name}}, so no one can find or contact you there. Nothing is lost: you can put it back any time.
+      </p>
+
+      {{/if}}
+
+      <!-- the button: bulletproof, so it survives clients that strip CSS -->
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:26px">
+        <tr><td align="center" bgcolor="#141C24" style="border-radius:999px">
+          <a href="{{edit_url}}" target="_blank"
+             style="display:inline-block;padding:14px 28px;font-family:Inter,'Segoe UI',Arial,sans-serif;font-size:15px;font-weight:700;line-height:20px;color:#FFFFFF;text-decoration:none;border-radius:999px">
+            {{#if live}}Edit my card &rarr;{{else}}Put my card back &rarr;{{/if}}
+          </a>
+        </td></tr>
+      </table>
+      <p style="margin:12px 0 0;font-size:12px;line-height:1.5;color:#5C6773;text-align:center">
+        Keep this email. The link always works: we'll send a code to confirm it's you.
+      </p>
+
+      {{#if live}}{{#if card_url}}
+      <p style="margin:18px 0 0;font-size:14px;line-height:1.5;text-align:center">
+        <a href="{{card_url}}" target="_blank" style="color:#0C889D;font-weight:600;text-decoration:underline">See my card on {{market_name}}</a>
+      </p>
+      {{/if}}{{/if}}
+
+      <!-- divider + safety line -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px">
+        <tr><td style="border-top:1px solid #E7DED2;padding-top:16px;font-size:12px;line-height:1.55;color:#5C6773">
+          You're getting this because your card on {{event_name}} was just saved. Didn't do this? Open the link above to change it back.
+        </td></tr>
+      </table>
+
+    </td></tr>
+
+    <!-- footer -->
+    <tr><td style="padding:20px 4px 0;font-family:Inter,'Segoe UI',Arial,sans-serif;font-size:12px;line-height:1.6;color:#5C6773">
+      <span style="color:#31B28B">&#9679;</span>&nbsp; {{event_name}}{{#if event_line}} &middot; {{event_line}}{{/if}}<br>
+      <a href="{{site_url}}" style="color:#5C6773;text-decoration:underline">{{site_host}}</a>
+    </td></tr>
+
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

@@ -61,7 +61,7 @@ export async function claim(request, env, ctx, action) {
     case 'start':  return start(request, env, ctx);
     case 'verify': return verify(request, env);
     case 'me':     return me(request, env);
-    case 'save':   return save(request, env);
+    case 'save':   return save(request, env, ctx);
     case 'photo':  return photo(request, env);
     default:       return json({ success: false, error: 'Not found.' }, 404);
   }
@@ -183,7 +183,7 @@ async function me(request, env) {
 
 /* ── save ────────────────────────────────────────────────────────────────── */
 
-async function save(request, env) {
+async function save(request, env, ctx) {
   const session = await readSession(request, env);
   if (!session) return json({ success: false, error: 'That took a while. Enter your email again to keep going.' }, 401);
   if (env.FREEZE_EDITS === '1') {
@@ -272,12 +272,25 @@ async function save(request, env) {
 
   const now = Date.now();
   const emailKey = await keyFor(env, session.e);
+  const wasAccepted = !!(await env.DB.prepare('SELECT accepted FROM claims WHERE ofid = ?').bind(session.o).first('accepted'));
   await env.DB.prepare('UPDATE claims SET updated_at = ?, accepted = ? WHERE ofid = ?')
     .bind(now, accepted ? 1 : 0, session.o).run();
   if (Object.keys(patch).length || statusChange) {
     await audit(env, request, session.o, emailKey, accepted ? 'accept' : 'decline',
       { ...before, ...(statusChange ? { Status: statusChange.Status[0] } : {}) },
       { ...patch, ...(statusChange ? { Status: statusChange.Status[1] } : {}) });
+  }
+
+  // The confirmation is the email they keep: it carries the page to come back to (the code email's
+  // link dies in 10 minutes). Sent only when the decision changes — made discoverable, or paused —
+  // never for an edit to the text, tags or photo. Ported from www.v3 claim-worker (2026-10-01).
+  if ((accepted !== wasAccepted || statusChange) && canSendEmail(env)) {
+    ctx.waitUntil(sendEmail(env, session.e, confirmedEmail(env, {
+      email: session.e,
+      name: str(field(updated, 'OfferingName')) || str(field(o, 'OfferingName')),
+      live: accepted,
+      cardUrl: pageUrl(env, session.m),
+    })));
   }
 
   const card = await loadCard(env, session, updated);
@@ -509,6 +522,51 @@ function notListedEmail(env) {
   };
 }
 
+// "Your card is live / paused": the email they keep. Same data names as www.v3's claim-confirmed
+// template (d-672f8d4f…), which is event-neutral, so both claim sites share it.
+function confirmedEmail(env, { email, name, live, cardUrl }) {
+  const event = env.EVENT_NAME || 'The Exchange';
+  const market = env.MARKET_NAME || str(env.EMAIL_SUBJECT_PREFIX) || event;
+  const site = siteOrigin(env);
+  const edit = `${site}/claim/`;
+  const first = str(name).split(/\s+/)[0] || '';
+  const hi = first ? `${esc(first)}, your card is ${live ? 'live' : 'paused'}.` : `Your card is ${live ? 'live' : 'paused'}.`;
+  return {
+    templateId: env.SENDGRID_CONFIRM_TEMPLATE_ID || null,
+    data: templateData(env, {
+      live,
+      first_name: first,
+      email: live ? email : '',
+      edit_url: edit,
+      card_url: live ? cardUrl || '' : '',
+      market_name: market,
+      site_host: site.replace(/^https?:\/\/(www\.)?/, ''),
+      logo_url: env.EMAIL_LOGO_URL || '',
+      logo_alt: 'ExonoPeeps',
+    }),
+    subject: `${subjectPrefix(env)}${live ? 'Your card is live' : 'Your card is paused'}`,
+    text:
+      (live
+        ? `Your card is live. People at ${event} can find you now, and introductions go to ${email}.\n\n`
+        : `Your card is paused. It's off ${event}, so no one can find or contact you there.\n\n`) +
+      `${live ? 'Edit your card' : 'Put your card back'} any time (we'll send a code to confirm it's you):\n${edit}\n\n` +
+      (live && cardUrl ? `See your card on ${market}:\n${cardUrl}\n\n` : '') +
+      `Keep this email. Didn't do this? Open the link above to change it back.`,
+    html: shell(event, `
+      <h1 style="margin:0 0 10px;font-size:26px;line-height:1.15;color:#141C24">${hi}</h1>
+      <p style="margin:0 0 22px;font-size:15px;line-height:1.6;color:#5C6773">${live
+        ? `People at ${esc(event)} can find you now, and introductions are emailed to <b style="color:#141C24">${esc(email)}</b>.`
+        : `It's off ${esc(event)}, so no one can find or contact you there. Nothing is lost: you can put it back any time.`}</p>
+      <p style="margin:0 0 12px"><a href="${edit}" style="display:inline-block;padding:12px 22px;border-radius:999px;background:#141C24;color:#fff;font-weight:700;font-size:15px;text-decoration:none">${live ? 'Edit my card' : 'Put my card back'} &rarr;</a></p>
+      <p style="margin:0;font-size:12px;color:#5C6773">Keep this email. The link always works: we'll send a code to confirm it's you.</p>
+      ${live && cardUrl ? `<p style="margin:16px 0 0;font-size:14px"><a href="${cardUrl}" style="color:#0C889D;font-weight:600">See my card on ${esc(market)}</a></p>` : ''}`),
+  };
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function shell(event, inner) {
   return `<!doctype html><html><body style="margin:0;background:#FDF8F2;font-family:Inter,Segoe UI,Arial,sans-serif">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
@@ -556,13 +614,15 @@ function sendgridBody(env, to, mail) {
     // Click tracking rewrites links, which would drop the #code fragment.
     tracking_settings: { click_tracking: { enable: false, enable_text: false } },
   };
-  if (env.SENDGRID_TEMPLATE_ID) {
-    // The template owns the subject and both bodies (worker/email/claim-code.html).
+  // Each email may name its own template (the confirmation does); otherwise the code template.
+  // templateId === null means "no template configured for this email": send the built-in copy.
+  const templateId = mail.templateId === undefined ? env.SENDGRID_TEMPLATE_ID : mail.templateId;
+  if (templateId) {
+    // The template owns both bodies (worker/email/*.html). The subject rides in the data so its
+    // wording lives here: the template's Subject field is exactly {{{subject}}} (three braces).
     return {
       ...base,
-      template_id: env.SENDGRID_TEMPLATE_ID,
-      // The subject rides in the data so its wording lives here, not in SendGrid: the template's
-      // Subject field is just {{subject}}.
+      template_id: templateId,
       personalizations: [{ to: [{ email: to }], dynamic_template_data: { ...mail.data, subject: mail.subject } }],
     };
   }

@@ -55,6 +55,13 @@ EMAIL_SUBJECT_PREFIX = "The Exchange 2026"
 # SendGrid dynamic template for the claim email (worker/email/claim-code.html). Not secret.
 # Empty = send the built-in copy instead.
 SENDGRID_TEMPLATE_ID = "d-88ba590f17344d338fed14324b804158"
+# "Your card is live / paused" — sent when the participant's decision changes. Shared with www.v3
+# (event-neutral template, worker/email/claim-confirmed.html). Subject field is {{{subject}}}.
+SENDGRID_CONFIRM_TEMPLATE_ID = "d-672f8d4f8a904171b260baac9d4dfc62"
+# Shown as "See my card on <MARKET_NAME>" in that email.
+MARKET_NAME      = "The Exchange 2026"
+# Absolute, fetchable by mail clients (SendGrid CDN — not a site URL behind Cloudflare's bot rules).
+EMAIL_LOGO_URL   = "https://cdn.mcauto-images-production.sendgrid.net/08fa249c5473f5f9/3e3077af-4807-4549-944f-3cb05009d9a2/1602x249.png"
 # Where Exonome keeps offering images (exono.me tenant). The page and the wall show
 # <IMAGE_BASE>/<OFID>/of_hero.png, the same image the market shows. Empty = the page draws initials.
 IMAGE_BASE       = "https://tricklyioazurestorage.blob.core.windows.net/offerings"
