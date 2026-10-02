@@ -84,12 +84,13 @@ nav{position:sticky;top:0;z-index:60;background:rgba(253,248,242,.88);backdrop-f
 .field{margin-bottom:20px}
 label{display:block;font-size:14px;font-weight:600;margin-bottom:7px}
 .hint{font-size:13px;color:var(--muted);font-weight:400;margin-top:6px}
-input[type=text],input[type=email],input[type=url],textarea{
+input[type=text],input[type=email],input[type=url],textarea,select{
   width:100%;font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--graphite);
   background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 15px;
   transition:border-color .16s,box-shadow .16s;-webkit-appearance:none;appearance:none}
 textarea{resize:vertical;min-height:132px}
-input:focus,textarea:focus{outline:none;border-color:var(--ap);box-shadow:0 0 0 3px rgba(12,136,157,.14)}
+select{cursor:pointer;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23141C24' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ap);box-shadow:0 0 0 3px rgba(12,136,157,.14)}
 input[aria-invalid=true],textarea[aria-invalid=true]{border-color:var(--err);background:#FFFCFC}
 .fielderr{display:none;font-size:13px;color:var(--err);margin-top:6px;font-weight:500}
 .fielderr.on{display:block}
@@ -270,6 +271,17 @@ footer img{height:18px;width:auto}
     <form id="f-card" novalidate>
       <div class="formerr" id="card-err" role="alert"></div>
 
+      <!-- First question: the card's category, one pick, current value pre-selected. -->
+      <section class="grp" id="cat-grp" hidden>
+        <h2 class="h-sm">Your category</h2>
+        <p class="lede">Pick the one that fits you best. It's how people browse the Exchange.</p>
+        <div class="field">
+          <label for="category" class="hp">Category</label>
+          <select id="category"></select>
+          <p class="fielderr" id="category-e"></p>
+        </div>
+      </section>
+
       <section class="grp">
         <h2 class="h-sm">Your photo</h2>
         <p class="lede">A face gets more introductions than initials. It goes live as soon as you pick it.</p>
@@ -391,6 +403,7 @@ footer img{height:18px;width:auto}
   var card = null;          // what the Worker last told us
   var email = '';
   var tags = [];
+  var category = null;      // the picked category, when the Worker offers the question
 
   /* ── plumbing ──────────────────────────────────────── */
   function api(path, opts){
@@ -569,8 +582,9 @@ footer img{height:18px;width:auto}
     $('frozen').hidden = !d.frozen;
     $('b-save').disabled = !!d.frozen;
     leadsCopy();
+    buildCats(d);
     buildChips(d.vocab || [], d.custom || null);
-    ['description','tags','leadsToMe'].forEach(function(f){ setErr(f, ''); });
+    ['description','tags','leadsToMe','category'].forEach(function(f){ setErr(f, ''); });
     banner('card-err');
     $('preview').classList.remove('saved');
     counts();
@@ -598,6 +612,31 @@ footer img{height:18px;width:auto}
       setErr('leadsToMe', 'Ask an organiser to stop introductions coming to you.');
     }
     leadsCopy();
+  });
+
+  /* ── category: one pick, their current one pre-selected (ported from www.v3) ── */
+  function buildCats(d){
+    var grp = $('cat-grp'), sel = $('category');
+    var list = d.categories || [];
+    category = list.length ? (d.category || null) : null;
+    grp.hidden = !list.length;
+    sel.innerHTML = '';
+    if (!category){
+      // No category yet: make them choose rather than pre-picking the first one.
+      var none = document.createElement('option');
+      none.value = ''; none.textContent = 'Choose a category'; none.disabled = true; none.selected = true;
+      sel.appendChild(none);
+    }
+    list.forEach(function(c){
+      var o = document.createElement('option');
+      o.value = c; o.textContent = c; o.selected = c === category;
+      sel.appendChild(o);
+    });
+  }
+  $('category').addEventListener('change', function(){
+    category = this.value || null;
+    setErr('category', '');
+    paint();
   });
 
   // Ported from www.v3 claim/claim.js (2026-10-01): "+ Other" for tags of their own, and any tag not
@@ -719,8 +758,8 @@ footer img{height:18px;width:auto}
     q('.ini').textContent = initials(name);
     q('h3').textContent = name;
     q('.ds').textContent = $('description').value.trim();
-    var cat = q('.cat');
-    cat.textContent = card.category || ''; cat.hidden = !card.category;
+    var cat = q('.cat'), catName = category || card.category || '';
+    cat.textContent = catName; cat.hidden = !catName;
 
     var img = q('img');
     if (card.photoUrl){
@@ -950,7 +989,8 @@ footer img{height:18px;width:auto}
     api('/api/claim/save', {json:{
       description: $('description').value.trim(),
       tags:        tags,
-      leadsToMe:   $('leads').checked
+      leadsToMe:   $('leads').checked,
+      category:    category || undefined
     }}).then(function(d){
       busy($('b-save'), false);
       card = d;

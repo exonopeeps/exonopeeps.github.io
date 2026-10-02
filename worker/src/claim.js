@@ -216,6 +216,18 @@ async function save(request, env, ctx) {
     }
   }
 
+  // Category: one pick from the exchange's list (CATEGORIES = exchange 2322's allowlist). The card's
+  // current value is always allowed back. The Partner API checks it against the allowlist again.
+  if ('category' in body && categoryChoices(env, o).length) {
+    const v = str(body.category);
+    const was = str(field(o, 'OfferingCategory'));
+    if (v !== was) {
+      if (!categoryChoices(env, o).includes(v)) return fail('category', 'Pick one of the categories.');
+      before.OfferingCategory = was;
+      patch.OfferingCategory = v;
+    }
+  }
+
   if ('tags' in body) {
     if (!Array.isArray(body.tags)) return fail('tags', 'We could not read those tags.');
     const was = splitTags(field(o, 'Tags'));
@@ -374,6 +386,7 @@ async function loadCard(env, session, offering = null) {
       name: str(field(o, 'OfferingName')) || str(field(o, 'TargetPersonName')),
       person: str(field(o, 'TargetPersonName')),
       category: str(field(o, 'OfferingCategory')),
+      ...(categoryChoices(env, o).length ? { categories: categoryChoices(env, o) } : {}),
       description: str(field(o, 'OfferingDescription')),
       tags: splitTags(field(o, 'Tags')),
       leadsToMe: str(field(o, 'TargetPersonEmail')).toLowerCase() === session.e,
@@ -720,6 +733,17 @@ export function claimSpid(env) {
 
 export function claimMoid(env) {
   return Number(env.CLAIM_MOID || env.EXONOME_MOID);
+}
+
+// The categories a card may move to (same rule as www.v3): CATEGORIES split on ";" (names contain
+// "&" and could contain commas), the card's own value first if the list lacks it. Empty = no
+// question — CATEGORY_EDITS off or no list.
+function categoryChoices(env, o) {
+  if (env.CATEGORY_EDITS !== '1') return [];
+  const list = [...new Set(str(env.CATEGORIES).split(';').map((c) => c.trim()).filter(Boolean))];
+  if (!list.length) return [];
+  const current = str(field(o, 'OfferingCategory'));
+  return current && !list.includes(current) ? [current, ...list] : list;
 }
 
 // The exchange's market page. https only (as www.v3's events.js): it becomes a link on the page.

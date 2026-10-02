@@ -69,6 +69,11 @@ EMAIL_LOGO_URL   = "https://cdn.mcauto-images-production.sendgrid.net/08fa249c54
 IMAGE_BASE       = "https://tricklyioazurestorage.blob.core.windows.net/offerings"
 # "What I'm looking for" chips. Lowercase, comma separated; stored ;-separated in Tags (100 chars).
 TAG_VOCAB        = "customers,partners,investors,hiring,talent,advisors,pilots,distribution,press,cofounder,feedback,intros"
+# "Your category": a one-pick question, first on the card form. CATEGORIES = exchange 2322's
+# CategoryAllowlist (ParentType 3, servicecategory), ";"-separated, in the order shown. The Partner
+# API (>= 3.3.0) re-checks it against the allowlist on PATCH /details.
+CATEGORY_EDITS   = "1"
+CATEGORIES       = "Startups & Small Business;Investors & Advisors;Service Providers & Consultants;Corporate & Strategic Partners;Creators & Community Builders;Students & Early Career"
 # "+ Other" on that list: up to TAG_CUSTOM_MAX tags of their own, TAG_CUSTOM_LEN characters each.
 TAG_CUSTOM       = "1"
 TAG_CUSTOM_MAX   = "3"
