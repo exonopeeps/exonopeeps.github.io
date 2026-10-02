@@ -221,8 +221,15 @@ async function save(request, env, ctx) {
     const was = splitTags(field(o, 'Tags'));
     const allowed = new Set([...vocab, ...was]);   // tags already on the card stay valid
     const next = [...new Set(body.tags.map(normTag).filter(Boolean))];
-    const unknown = next.find((t) => !allowed.has(t));
-    if (unknown) return fail('tags', `"${unknown}" isn't one of the options.`);
+    // Tags not on the list (or already on the card) are their own, typed in "+ Other".
+    const custom = customTags(env);
+    const mine = next.filter((t) => !allowed.has(t));
+    if (mine.length && !custom) return fail('tags', `"${mine[0]}" isn't one of the options.`);
+    if (custom && mine.length > custom.max) return fail('tags', `Add up to ${custom.max} of your own.`);
+    for (const t of mine) {
+      if (t.length > custom.len) return fail('tags', `Keep "${t.slice(0, 20)}…" under ${custom.len} characters.`);
+      if (!OWN_TAG.test(t) || containsUrl(t)) return fail('tags', 'Your own tags: letters, numbers and spaces only, no web addresses.');
+    }
     const joined = next.join(';');
     if (joined.length > LIMITS.tags) return fail('tags', 'That is too many. Pick fewer tags.');
     if (containsUrl(joined)) return fail('tags', 'Leave web addresses out of tags.');
@@ -376,7 +383,9 @@ async function loadCard(env, session, offering = null) {
       photoUrl: photoUrl(env, session.o, claimRow),
       hasPhoto: !!claimRow?.photo_url,        // a photo uploaded here, which Remove can undo
       pageUrl: pageUrl(env, session.m),
+      marketUrl: marketUrl(env),            // "See everyone on the exchange" on the done screen
       vocab: tagVocab(env),
+      ...(customTags(env) ? { custom: customTags(env) } : {}),   // "+ Other" limits for the page
       frozen: env.FREEZE_EDITS === '1',
     },
   };
@@ -690,6 +699,17 @@ function splitTags(v) {
 
 export { LIVE };
 
+// "+ Other": tags of their own on "What I'm looking for" (same rules as www.v3's tagCustom). Off unless
+// TAG_CUSTOM = "1". Lowercase letters/digits, then also space & ' -; no URLs; inside the 100-char Tags.
+const OWN_TAG = /^[a-z0-9][a-z0-9 &'-]*$/;
+function customTags(env) {
+  if (env.TAG_CUSTOM !== '1') return null;
+  return {
+    max: Math.min(Math.max(Number(env.TAG_CUSTOM_MAX) || 3, 1), 5),
+    len: Math.min(Math.max(Number(env.TAG_CUSTOM_LEN) || 30, 3), 40),
+  };
+}
+
 export function tagVocab(env) {
   return str(env.TAG_VOCAB).split(',').map(normTag).filter(Boolean);
 }
@@ -700,6 +720,12 @@ export function claimSpid(env) {
 
 export function claimMoid(env) {
   return Number(env.CLAIM_MOID || env.EXONOME_MOID);
+}
+
+// The exchange's market page. https only (as www.v3's events.js): it becomes a link on the page.
+function marketUrl(env) {
+  const u = str(env.MARKET_URL);
+  return /^https:\/\/[^\s"'<>]+$/.test(u) ? u : null;
 }
 
 export function pageUrl(env, emid) {

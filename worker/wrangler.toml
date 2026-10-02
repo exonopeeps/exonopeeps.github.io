@@ -58,6 +58,8 @@ SENDGRID_TEMPLATE_ID = "d-88ba590f17344d338fed14324b804158"
 # "Your card is live / paused" — sent when the participant's decision changes. Shared with www.v3
 # (event-neutral template, worker/email/claim-confirmed.html). Subject field is {{{subject}}}.
 SENDGRID_CONFIRM_TEMPLATE_ID = "d-672f8d4f8a904171b260baac9d4dfc62"
+# "See everyone on the exchange" on the claim page's done screen (https only).
+MARKET_URL       = "https://connect.exono.me/Market/The-Exchange-2026"
 # Shown as "See my card on <MARKET_NAME>" in that email.
 MARKET_NAME      = "The Exchange 2026"
 # Absolute, fetchable by mail clients (SendGrid CDN — not a site URL behind Cloudflare's bot rules).
@@ -67,6 +69,10 @@ EMAIL_LOGO_URL   = "https://cdn.mcauto-images-production.sendgrid.net/08fa249c54
 IMAGE_BASE       = "https://tricklyioazurestorage.blob.core.windows.net/offerings"
 # "What I'm looking for" chips. Lowercase, comma separated; stored ;-separated in Tags (100 chars).
 TAG_VOCAB        = "customers,partners,investors,hiring,talent,advisors,pilots,distribution,press,cofounder,feedback,intros"
+# "+ Other" on that list: up to TAG_CUSTOM_MAX tags of their own, TAG_CUSTOM_LEN characters each.
+TAG_CUSTOM       = "1"
+TAG_CUSTOM_MAX   = "3"
+TAG_CUSTOM_LEN   = "30"
 # "1" stops every edit and photo upload at once, without a deploy of code.
 FREEZE_EDITS     = "0"
 
